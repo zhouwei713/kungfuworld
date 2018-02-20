@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasy - Manage User{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+{% if current_user.is_administrator() %}
+{% for i in users %}
+<p>
+{{ i.username }} <a href="{{ url_for('main.edit_profile_admin',id=i.id) }}" >edit</a>
+
+{% endfor %}
+</p>
+{% endif %}
+
+</div>
+
+{% endblock %}

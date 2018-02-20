@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Flasky - Profile{% endblock %}
+
+{% block content %}
+<p class="page-header">
+<a href="{{ url_for('main.changepw')}}">Change your password</a>
+</p>
+<p class="page-header">
+<a href="{{ url_for('main.index')}}">Change your email</a>
+</p>
+{% endblock %}
+
+{% block pagination %}{% endblock %}

@@ -1,0 +1,305 @@
+<!doctype html>
+<html>
+<head>
+    <title>{% block title %}Kung Fu Wolrd{% endblock %}</title>
+{% block head %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+<link rel="shortcut icon" href="/static/icon/background-dragonv2.jpg">
+<link rel="icon" href="/static/icon/background-dragonv2.jpg" type="image/x-icon">
+<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css" />
+<link type="text/css" rel="stylesheet" href="/static/css/font-awesome.min.css" />
+<!--css of top -->
+<link type="text/css" rel="stylesheet" href="/static/css/sns.min.css" />
+<link type="text/css" rel="stylesheet" href="/static/css/style.css" />
+{% endblock %}
+</head>
+<style>
+body {
+     padding-bottom: 100px;
+     background-color: #ffffff;
+{#     background-image: url('{{ url_for('static',filename='background-dragonv2.jpg') }}');#}
+     background-image: url('{{ url_for('static',filename='images/jiangshan.jpg') }}');
+     background-repeat: no-repeat;
+     background-attachment: fixed;
+     background-size:100% 100%;
+     color:#444;
+     min-height:100%;
+     margin:0;
+}
+</style>
+{% block body %}
+<body class="has-fixed-navbar">
+<!-- start header -->
+    {% block header %}
+<header class="site-header fixed" id="main-navbar">
+  <div class="outer-container">
+    <div class="container-fluid">
+      <div class="col-md-2 col-xs-8 logo-wrap">
+        <!-- start logo -->
+        <a href="http://www.uishijie.com" class="custom-logo-link">
+          <img width="150" height="300" src="/static/images/kungfu.jpg" alt="" />
+        </a>
+        <!-- end logo -->
+      </div>
+      <div class="col-md-8 hidden-sm hidden-xs">
+        <span class="line"></span>
+        <nav class="main-menu" id="main-menu">
+          <ul id="menu-main-menu" class="menu">
+            <li class="current-menu-item"><a href="/">Home</a></li>
+        {% if current_user.is_administrator() %}
+        <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
+        {% endif %}
+            <li class="menu-item-has-children"><a href="#">Author</a>
+              <ul>
+                <li><a href="#">Jin Yong</a></li>
+                <li><a href="#">Gu Long</a></li>
+                <li><a href="#">周传雄</a></li>
+                <li><a href="#">河图</a></li>
+                <li><a href="#">薛之谦</a></li>
+              </ul>
+            </li>
+              {% if current_user.is_authenticated %}
+            <li class="menu-item-has-children"><a href="#">About Me</a>
+              <ul>
+                <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
+                {% if current_user.is_administrator() %}
+                    <li><a href="/admin">Admin Page</a></li>
+                <li><a href="{{ url_for('main.manage_user') }}">Manage User</a></li>
+                <li><a href="{{ url_for('api.online_user') }}">Online User</a></li>
+                <li><a href="{{ url_for('chat.chat_index') }}" target="_blank">Talk With Robot</a></li>
+               {% endif %}
+               <li><a href="{{ url_for('main.manage_profile') }}">Setting</a></li>
+               {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+               <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
+               {% endif %}
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+              </ul>
+             </li>
+              {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+              {% endif %}
+          <!-- start music -->
+
+          <!-- end music -->
+          </ul>
+        </nav>
+      </div>
+    <!-- music -->
+
+    <!-- end music -->
+      <div class="col-md-2 col-xs-4 text-right">
+        <span class="search-toggle" id="search-button" data-toggle="modal" data-target="#searchmodal">
+          <i class="fa fa-search text-center"></i>
+        </span>
+        <span class="mobile-menu-toggle hidden-md hidden-lg" id="nav-toggle-button">
+          <i class="fa fa-bars text-center"></i>
+        </span>
+      </div>
+      <div id="search-wrap">
+        <form action="{{ url_for('main.search') }}" method="post" class="form-group search-form">
+          <div class="form-group clearfix">
+            <label class="sr-only" for="search">Search</label>
+            <div class="input-group">
+              <input type="text" name="search" id="search" value="" class="form-control required email search-input" placeholder="Please Type Search Word ...">
+              <div class="input-group-btn">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <nav class="mobile-menu visible-sm visible-xs" id="mobile-menu">
+        <ul id="menu-main-menu-1" class="menu">
+          <li class="current-menu-item"><a href="/newone">Home</a></li>
+         {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
+        {% endif %}
+          <li class="menu-item-has-children"><a href="#">Author</a>
+            <ul>
+              <li><a href="#">Jin Yong</a></li>
+              <li><a href="#">Gu Long</a></li>
+              <li><a href="#">周传雄</a></li>
+              <li><a href="#">河图</a></li>
+              <li><a href="#">薛之谦</a></li>
+            </ul>
+          </li>
+           {% if current_user.is_authenticated %}
+            <li class="menu-item-has-children"><a href="#">About Me</a>
+              <ul>
+                <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
+                {% if current_user.is_administrator() %}
+                <li><a href="/admin">Admin Page</a></li>
+                <li><a href="{{ url_for('main.manage_user') }}">Manage User</a></li>
+                <li><a href="{{ url_for('api.online_user') }}">Online User</a></li>
+                <li><a href="{{ url_for('chat.chat_index') }}" target="_blank">Talk With Robot</a></li>
+               {% endif %}
+               <li><a href="{{ url_for('main.manage_profile') }}">Setting</a></li>
+               {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+               <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
+               {% endif %}
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+              </ul>
+             </li>
+              {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+              {% endif %}
+        </ul>
+      </nav>
+      <div class="backdrop hidden-md hidden-lg" id="backdrop">
+        <span class="menu-close text-center"><i class="fa fa-arrow-left"></i></span>
+      </div>
+    </div>
+  </div>
+</header>
+{% endblock %}
+<!-- end header -->
+<!-- start cover -->
+{% block cover %}
+<section class="cover cover-home has-image" style="background-image: url(/static/images/wuxia01.jpg);">
+  <div class="cover-content-wrap text-center">
+    <h1 class="intro-title">Jin Yong - 《Dragon eight》</h1>
+    <P class="intro-description text-content">Although millions of people I go.</P>
+  </div>
+{#<embed src="/static/music/no_tear_of_man.mp3" >#}
+{#<audio autoplay="autoplay" height="100" width="100">#}
+{##}
+{#  <source src="/static/music/no_tear_of_man.mp3" type="audio/mp3" />#}
+{##}
+{#</audio>#}
+</section>
+    {% endblock %}
+<!-- end cover -->
+<!-- start main-content area -->
+{% block main_content %}
+<section class="main-content-area">
+  <div class="outer-container">
+    <div class="inner-container">
+      <!-- start post entry -->
+        {% block content %}
+
+        {% endblock %}
+      <!-- end post entry -->
+      <!-- start pagination -->
+    {% block pagination %}
+      <div class="pagination-wrap clearfix" role="navigation">
+        <a href="#" class="older-posts pull-left"><i class="fa fa-long-arrow-left fa-fw"></i><span>Prev Page</span></a>
+        <a href="#" class="older-posts pull-right"><span>Next Page</span><i class="fa fa-long-arrow-right fa-fw"></i></a>
+      </div>
+        {% endblock %}
+      <!-- end pagination -->
+    </div>
+  </div>
+</section>
+    {% endblock %}
+<!-- end main-content area -->
+<!-- start footer -->
+{% block footer %}
+<footer class="site-fotter">
+  <div class="footer-top">
+    <div class="outer-container">
+      <div class="container-fluid">
+        <div class="row footer-widget-area">
+          <div class="col-md-4 widget-wrap">
+            <div id="tag_cloud-3" class="widget widget_tag_cloud">
+              <h4 class="widget-title">Lable</h4>
+              <div class="tagcloud">
+                <a href='#' title=''>Jing Yong</a>
+                <a href='#' title=''>Gu Long</a>
+                <a href='#' title=''>Wu Xia</a>
+                <a href='#' title=''>Kung Fu</a>
+                <a href='#' title=''>射雕英雄传</a>
+                <a href='#' title=''>鹿鼎记</a>
+                <a href='#' title=''>小李飞刀</a>
+                <a href='#' title=''>三少爷的剑</a>
+                <a href='#' title=''>七剑下天山</a>
+                <a href='#' title=''>诛仙</a>
+                <a href='#' title=''>风云</a>
+                <a href='#' title=''>天龙八部</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 widget-wrap">
+            <div class="widget widget_mino_recent_post">
+              <h4 class="widget-title">Popular Articles</h4>
+              <div class="recent-post">
+                <div class="recent-single-post clearfix">
+                  <a href="#" class="post-title">
+                    <div class="post-thumb pull-left" style="background-image: url(static/new/images/1.jpg);"> </div>
+                  </a>
+                  <div class="post-info">
+                    <h4 class="post-title h5"><a href="#">小李飞刀</a></h4>
+                    <div class="date"><a href="#">2016-12-24</a></div>
+                  </div>
+                </div>
+                <div class="recent-single-post clearfix">
+                  <a href="#" class="post-title">
+                    <div class="post-thumb pull-left" style="background-image: url(static/new/images/2.jpg);"> </div>
+                  </a>
+                  <div class="post-info">
+                    <h4 class="post-title h5"><a href="#">天龙八部</a></h4>
+                    <div class="date"><a href="#">2016-12-20</a></div>
+                  </div>
+                </div>
+                <div class="recent-single-post clearfix">
+                  <a href="#" class="post-title">
+                    <div class="post-thumb pull-left" style="background-image: url(static/new/images/3.jpg);"> </div>
+                  </a>
+                  <div class="post-info">
+                    <h4 class="post-title h5"><a href="#">七剑下天山</a></h4>
+                    <div class="date"><a href="#">2016-12-14</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 widget-wrap">
+            <div class="widget widget_text">
+              <h4 class="widget-title">About This WebSite</h4>
+              <div class="textwidget">
+                  This is a martial arts novel site. In this site, you can browse a large number of interesting martial arts novels, you can arbitrarily in the martial arts world. Slowly understand the profound Chinese martial arts, you will gradually fall in love with him, deeply and deeply. . .
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="outer-container">
+      <div class="container-fluid">
+        <div class="row footer-bottom-content">
+          <div class="col-md-12">
+            <div class="social-links-wrap text-center">
+              <ul class="social-links">
+{#                <li><a href="#"><i class="sns icon-weibo"></i></a></li>#}
+{#                <li><a href="#"><i class="sns icon-wechat"></i></a></li>#}
+{#                <li><a href="#"><i class="sns icon-tencent-weibo"></i></a></li>#}
+{#                <li><a href="#"><i class="sns icon-renren"></i></a></li>#}
+{#                <li><a href="#"><i class="sns icon-github-text"></i></a></li>#}
+{#                <li><a href="#"><i class="sns icon-qq"></i></a></li>#}
+{#                <li><a href="#"><i class="fa fa-rss"></i></a></li>#}
+                <li><a href="https://github.com/zhouwei713" target="_blank"><i class="sns icon-github-text"></i></a></li>
+                <li><a href="https://twitter.com/KungFuRealm" target="_blank"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+              </ul>
+            </div>
+            <div class="copyright-info text-center"> &copy; 2018, KungFuWorld. All Right Reserved </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<span class="back-to-top" id="back-to-top"><i class="fa fa-angle-up"></i></span>
+<!-- end footer -->
+   {% endblock %}
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/highlight.pack.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/js/main.js"></script>
+    {% endblock %}
+</body>
+{% endblock %}
+</html>

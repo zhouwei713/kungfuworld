@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+{% block title %}
+Flask-OnlineUser
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="color: #000;">
+    <h1>Online Users:</h1>
+    {% for i in Online_user %}
+        <li style="color: #f0f0f0;"><a href="http://maps.google.com/?q={{ city }}" >{{ i }}</a></li>
+    {% endfor %}
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}KungFu World - Rgister{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+<h1>Register</h1>
+<div class="col-md-4">
+{{ wtf.quick_form(form) }}
+<br/>
+<p>
+ Already have Account?
+ <a href="{{ url_for('auth.login') }}">
+ Click here to login
+ </a>
+</p>
+</div>
+</div>
+
+
+
+
+{% endblock %}

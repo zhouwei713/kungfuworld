@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block page_content %}
+<div class="container">
+<h2 style="color: #1b1b1b">IP address {{ ipAddress }}</h2>
+<div class="row" style="color: #0e0e0e">
+    <div class="col-lg-6 col-md-6">
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <th>countryName</th>
+                <td>{{ countryName }}</td>
+            </tr>
+            <tr>
+                <th>countryCode</th>
+                <td>{{ countryCode }}</td>
+            </tr>
+            <tr>
+                <th>region</th>
+                <td>{{ region }}</td>
+            </tr>
+{#            <tr>#}
+{#                <th>continentName</th>#}
+{#                <td>{{ continentName }}</td>#}
+{#            </tr>#}
+            <tr>
+                <th>city</th>
+                <td><a href="https://www.google.com/maps?q={{ city }}" >{{ city }}</a></td>
+            </tr>
+            <tr>
+                <th>continentCode</th>
+                <td>{{ continentCode }}</td>
+            </tr>
+            <tr>
+                <th>Coordinates</th>
+                <td>{{ lat }},{{ lon }}</td>
+            </tr>
+            <tr>
+                <th>IP Is Available Or Not</th>
+                <td>{{ ip_is_available }}</td>
+            </tr>
+             <tr>
+                <th>Your IP</th>
+                <td>{{ YIP }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <div>
+            <!--<iframe style="width:100%; height:500px; border:none; margin:0; padding:0"
+                    src="//www.openstreetmap.org/export/embed.html?bbox=34.3219,-3.79207,39.3219,1.20793&amp;layer=mapnik&amp;marker=-1.29207,36.8219">
+
+            </iframe>-->
+            <!--<iframe src="https://www.google.com/maps/embed?pb=kenya" width="600" height="450" frameborder="0" style="border:0" allowfullscreen>
+
+            </iframe>-->
+            <iframe style="width:100%; height:500px; border:none; margin:0; padding:0"
+                    src="//www.openstreetmap.org/export/embed.html?bbox={{ lon - 2 }},{{ lat - 2 }},{{ lon + 2 }},{{ lat + 2 }}&layer=mapnik&marker={{ lat }},{{ lon }}">
+
+            </iframe>
+        </div>
+    </div>
+</div>
+ <div>
+     Is the above data incorrect ? Please help us improve our database accuracy. <a href=#> Report wrong data.</a>
+ </div>
+</div>
+<!--<div><a href="http://maps.google.com/?ip=">Check IP Detail</a></div>-->
+
+{% endblock %}

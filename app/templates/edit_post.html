@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% import "_macros.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Kung Fu World - Edit Post{% endblock %}
+{% block cover %}{% endblock %}
+{% block header %}
+<header class="site-header fixed" id="main-navbar">
+  <div class="outer-container">
+    <div class="container-fluid">
+      <div class="col-md-2 col-xs-8 logo-wrap">
+        <!-- start logo -->
+        <a href="http://www.uishijie.com" class="custom-logo-link">
+          <img width="150" height="300" src="/static/images/kungfu.jpg" alt="" />
+        </a>
+        <!-- end logo -->
+      </div>
+      <div class="col-md-8 hidden-sm hidden-xs">
+        <span class="line"></span>
+        <nav class="main-menu" id="main-menu">
+          <ul id="menu-main-menu" class="menu">
+            <li><a href="/">Home</a></li>
+        {% if current_user.is_administrator() %}
+        <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
+        {% endif %}
+            <li class="menu-item-has-children current-menu-item"><a href="#">Author</a>
+              <ul>
+                <li><a href="#">Jin Yong</a></li>
+                <li><a href="#">Gu Long</a></li>
+                <li><a href="#">周传雄</a></li>
+                <li><a href="#">河图</a></li>
+                <li><a href="#">薛之谦</a></li>
+              </ul>
+            </li>
+           {% if current_user.is_authenticated %}
+            <li class="menu-item-has-children"><a href="#">About Me</a>
+              <ul>
+                <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
+                {% if current_user.is_administrator() %}
+                    <li><a href="/admin">Admin Page</a></li>
+                <li><a href="{{ url_for('main.manage_user') }}">Manage User</a></li>
+                <li><a href="{{ url_for('api.online_user') }}">Online User</a></li>
+                <li><a href="{{ url_for('chat.chat_index') }}" target="_blank">Talk With Robot</a></li>
+               {% endif %}
+               <li><a href="{{ url_for('main.manage_profile') }}">Setting</a></li>
+               {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+               <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
+               {% endif %}
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+              </ul>
+             </li>
+              {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+              {% endif %}
+          </ul>
+        </nav>
+      </div>
+      <div class="col-md-2 col-xs-4 text-right">
+        <span class="search-toggle" id="search-button" data-toggle="modal" data-target="#searchmodal">
+          <i class="fa fa-search text-center"></i>
+        </span>
+        <span class="mobile-menu-toggle hidden-md hidden-lg" id="nav-toggle-button">
+          <i class="fa fa-bars text-center"></i>
+        </span>
+      </div>
+      <div id="search-wrap">
+        <form action="{{ url_for('main.search') }}" method="post" class="form-group search-form">
+          <div class="form-group clearfix">
+            <label class="sr-only" for="search">Search</label>
+            <div class="input-group">
+              <input type="text" name="search" id="search" value="" class="form-control required email search-input" placeholder="Please Type Search Word ...">
+              <div class="input-group-btn">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <nav class="mobile-menu visible-sm visible-xs" id="mobile-menu">
+        <ul id="menu-main-menu-1" class="menu">
+          <li><a href="/">Home</a></li>
+        {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
+        {% endif %}
+          <li class="menu-item-has-children current-menu-item"><a href="#">Author</a>
+            <ul>
+              <li><a href="#">Jin Yong</a></li>
+              <li><a href="#">Gu Long</a></li>
+              <li><a href="#">周传雄</a></li>
+              <li><a href="#">河图</a></li>
+              <li><a href="#">薛之谦</a></li>
+            </ul>
+          </li>
+           {% if current_user.is_authenticated %}
+            <li class="menu-item-has-children"><a href="#">About Me</a>
+              <ul>
+                <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
+                {% if current_user.is_administrator() %}
+                    <li><a href="/admin">Admin Page</a></li>
+                <li><a href="{{ url_for('main.manage_user') }}">Manage User</a></li>
+                <li><a href="{{ url_for('api.online_user') }}">Online User</a></li>
+                <li><a href="{{ url_for('chat.chat_index') }}" target="_blank">Talk With Robot</a></li>
+               {% endif %}
+               <li><a href="{{ url_for('main.manage_profile') }}">Setting</a></li>
+               {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+               <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
+               {% endif %}
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+              </ul>
+             </li>
+              {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+              {% endif %}
+        </ul>
+      </nav>
+      <div class="backdrop hidden-md hidden-lg" id="backdrop">
+        <span class="menu-close text-center"><i class="fa fa-arrow-left"></i></span>
+      </div>
+    </div>
+  </div>
+</header>
+{% endblock %}
+{% block content %}
+<div class="comment-wrap" id="comments">
+<br>
+<h3>Edit Post</h3>
+<div>
+{{ wtf.quick_form(form) }}
+</div>
+<div><a href="{{ url_for('main.post', id=post.id)}}">Cancel</a></div>
+<div><a href="{{ url_for('.edit_delete_post', id=post.id)}}">Delete</a></div>
+</div>
+{% endblock %}
+
+{% block pagination %}
+<div class="pagination-wrap clearfix" role="navigation"></div>
+{% endblock %}

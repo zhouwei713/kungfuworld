@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}KungFu World - Check with your inbox{% endblock %}
+
+{% block content %}
+<div class="col-md-8 widget-wrap">
+    <h1>
+        Hello, {{ current_user.username }}!
+    </h1>
+    <h3>You should receive an email from KungFu World.</h3>
+    <p>
+        Check your inbox, click the confirmation link to active your account.
+    </p>
+    <p>
+        Need another confirmation email?
+        <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
+    </p>
+</div>
+{% endblock %}
+
+{% block pagination %}
+<div class="pagination-wrap clearfix" role="navigation"></div>
+{% endblock %}

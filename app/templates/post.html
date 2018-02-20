@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% import "_macros.html" as macros %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Kung Fu World - Post{% endblock %}
+{% block header %}
+<header class="site-header fixed" id="main-navbar">
+  <div class="outer-container">
+    <div class="container-fluid">
+      <div class="col-md-2 col-xs-8 logo-wrap">
+        <!-- start logo -->
+        <a href="http://www.uishijie.com" class="custom-logo-link">
+          <img width="150" height="300" src="/static/images/kungfu.jpg" alt="" />
+        </a>
+        <!-- end logo -->
+      </div>
+      <div class="col-md-8 hidden-sm hidden-xs">
+        <span class="line"></span>
+        <nav class="main-menu" id="main-menu">
+          <ul id="menu-main-menu" class="menu">
+            <li><a href="/">Home</a></li>
+        {% if current_user.is_administrator() %}
+        <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
+        {% endif %}
+            <li class="menu-item-has-children current-menu-item"><a href="#">Author</a>
+              <ul>
+                <li><a href="#">Jin Yong</a></li>
+                <li><a href="#">Gu Long</a></li>
+                <li><a href="#">周传雄</a></li>
+                <li><a href="#">河图</a></li>
+                <li><a href="#">薛之谦</a></li>
+              </ul>
+            </li>
+           {% if current_user.is_authenticated %}
+            <li class="menu-item-has-children"><a href="#">About Me</a>
+              <ul>
+                <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
+                {% if current_user.is_administrator() %}
+                    <li><a href="/admin">Admin Page</a></li>
+                <li><a href="{{ url_for('main.manage_user') }}">Manage User</a></li>
+                <li><a href="{{ url_for('api.online_user') }}">Online User</a></li>
+                <li><a href="{{ url_for('chat.chat_index') }}" target="_blank">Talk With Robot</a></li>
+               {% endif %}
+               <li><a href="{{ url_for('main.manage_profile') }}">Setting</a></li>
+               {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+               <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
+               {% endif %}
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+              </ul>
+             </li>
+              {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+              {% endif %}
+          </ul>
+        </nav>
+      </div>
+      <div class="col-md-2 col-xs-4 text-right">
+        <span class="search-toggle" id="search-button" data-toggle="modal" data-target="#searchmodal">
+          <i class="fa fa-search text-center"></i>
+        </span>
+        <span class="mobile-menu-toggle hidden-md hidden-lg" id="nav-toggle-button">
+          <i class="fa fa-bars text-center"></i>
+        </span>
+      </div>
+      <div id="search-wrap">
+        <form action="{{ url_for('main.search') }}" method="post" class="form-group search-form">
+          <div class="form-group clearfix">
+            <label class="sr-only" for="search">Search</label>
+            <div class="input-group">
+              <input type="text" name="search" id="search" value="" class="form-control required email search-input" placeholder="Please Type Search Word ...">
+              <div class="input-group-btn">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <nav class="mobile-menu visible-sm visible-xs" id="mobile-menu">
+        <ul id="menu-main-menu-1" class="menu">
+          <li><a href="/">Home</a></li>
+        {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
+        {% endif %}
+          <li class="menu-item-has-children current-menu-item"><a href="#">Author</a>
+            <ul>
+              <li><a href="#">Jin Yong</a></li>
+              <li><a href="#">Gu Long</a></li>
+              <li><a href="#">周传雄</a></li>
+              <li><a href="#">河图</a></li>
+              <li><a href="#">薛之谦</a></li>
+            </ul>
+          </li>
+           {% if current_user.is_authenticated %}
+            <li class="menu-item-has-children"><a href="#">About Me</a>
+              <ul>
+                <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
+                {% if current_user.is_administrator() %}
+                    <li><a href="/admin">Admin Page</a></li>
+                <li><a href="{{ url_for('main.manage_user') }}">Manage User</a></li>
+                <li><a href="{{ url_for('api.online_user') }}">Online User</a></li>
+                <li><a href="{{ url_for('chat.chat_index') }}" target="_blank">Talk With Robot</a></li>
+               {% endif %}
+               <li><a href="{{ url_for('main.manage_profile') }}">Setting</a></li>
+               {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+               <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
+               {% endif %}
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+              </ul>
+             </li>
+              {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+              {% endif %}
+        </ul>
+      </nav>
+      <div class="backdrop hidden-md hidden-lg" id="backdrop">
+        <span class="menu-close text-center"><i class="fa fa-arrow-left"></i></span>
+      </div>
+    </div>
+  </div>
+</header>
+{% endblock %}
+{% block cover %}{% endblock %}
+
+{% block content %}
+<!-- start main-content area -->
+{% for post in posts %}
+<article class="single-post-entry" id='42'>
+  <!-- start cover -->
+  <section class="cover has-image"  style="background-image: url({{ post.picture }});">
+    <div class="cover-content-wrap align-center">
+      <h1 class="post-title">{{ post.postname }}</h1>
+      <div class="post-meta">
+        <span class="author">Post By <a href="{{ url_for('.user', username=post.author.username) }}" title="" rel="author">{{ post.author.username }}</a></span>
+        <span class="date">- {{ post.timestamp }}</span>
+          {% if post.original %}
+        <span class="category">-  The original author Is <a href="#" rel="category tag">{{ post.original }}</a></span>
+          {% endif %}
+      </div>
+    </div>
+  </section>
+  <!-- end cover -->
+  <!-- start main-content area -->
+  <section class="main-content-area">
+    <div class="outer-container">
+      <div class="inner-container">
+        <div class="entry-content-wrap">
+          <div class="post-content text-content">
+            <p>
+             {% if post.body_html %}
+               {{ post.body_html | safe }}
+            {% else %}
+               {{ post.body }}
+            {% endif %}
+            </p>
+          </div>
+               <div class="post-footer">
+               {% if current_user == post.author %}
+               <a href="{{ url_for('.edit', id=post.id) }}" class="label label-primary" style="float:right">Edit</a>
+               {% endif %}
+               {% if current_user.is_administrator() %}
+               <a href="{{ url_for('.edit', id=post.id) }}" class="label label-danger" style="float:right">Edit [Admin]</a>
+               {% endif %}
+               </div>
+          <div class="tag-wrap">
+            TAG:
+            <a href="#" class="label label-default">{{ post.original }}</a>
+            <a href="#" class="label label-primary">{{ post.tag }}</a>
+            <span class="label label-success">Views: {{ post.readtimes }}</span>
+          </div>
+        </div>
+        <!-- end post entry -->
+        <!-- start comment -->
+        <div class="comment-wrap" id="comments">
+          <div class="comment-count">
+            <h4>Comments</h4>
+          </div>
+          <ol>
+            {% for comment in comments %}
+              <li id="comment-4" class="comment-entry" >
+              <article class="comment depth-1">
+                <header>
+                  <a href='{{ url_for('.profile', username=comment.author.username) }}' target="_blank" class="pull-left">
+                    <img alt='' src='{{ comment.author.gravatar(size=40) }}' class='avatar' height='50' width='50' />
+                  </a>
+                  <div class="comment-details clearfix">
+                    <div class="commenter-name">
+                      <a href='{{ url_for('.profile', username=comment.author.username) }}' target="_blank">{{ comment.author.username }}</a>
+                      {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+                     <a class="label label-default" {% if comment.id / 5 == 0 %}href="/moderate?page={{ pagination.total }}"{% else %}href="/moderate?page={{ pagination.total - 1 }}"{% endif %}>Manage Comment</a>
+                     {% endif %}
+                    </div>
+                    <span class="commenter-meta">{{ comment.timestamp }}</span>
+                  </div>
+                </header>
+                <div class="comment-body">
+                  <p>
+                   {% if moderate or not comment.disabled %}
+                   {% if comment.body_html %}
+                      {{ comment.body_html| safe }}
+                   {% else %}
+                      {{ comment.body }}
+                   {% endif %}
+                 {% endif %}
+                  </p>
+                </div>
+{#                <a rel='nofollow' class='comment-reply-link' href='#respond' onclick='return addComment.moveForm( "comment-4", "4", "respond", "42" )' aria-label='回复 笔下光年'>回复</a>#}
+              </article>
+            </li>
+              {% endfor %}
+              {% if comments %}
+              {% if pagination %}
+                <div class="pagination">
+                    {{ macros.pagination_widget(pagination, '.post', fragment='#comments', id=posts[0].id) }}
+                </div>
+              {% endif %}
+              {% endif %}
+            <!-- #comment-## -->
+          </ol>
+        {% if current_user.can(Permission.COMMENT) %}
+          <div id="respond" class="comment-respond">
+            <h5 id="reply-title" class="comment-reply-title">
+              ADD COMMENT
+            </h5>
+              {{ wtf.quick_form(form) }}
+          </div>
+            {% else %}
+            <div id="respond" class="comment-respond">
+            <h5 id="reply-title" class="comment-reply-title">
+              <a href="{{ url_for('auth.login') }}"> LOGIN TO</a> POST COMMENT
+            </h5>
+            </div>
+        {% endif %}
+          <!-- #respond -->
+        </div>
+        <!-- end comment -->
+      </div>
+    </div>
+  </section>
+</article>
+{% endfor %}
+{% endblock %}
+<!-- end container -->
+<!-- end main-content area -->
+{% block pagination %}
+<div class="pagination-wrap clearfix" role="navigation"></div>
+{% endblock %}
+{% block script %}
+<link rel='stylesheet' href='/static/css/atom-one-dark.css' type='text/css' />
+<script type="text/javascript" src="/static/js/comment-reply.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/highlight.pack.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/js/main.js"></script>
+{% endblock %}
+

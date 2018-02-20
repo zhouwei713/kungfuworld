@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}
+Talk With Robot
+{% endblock %}
+
+{% block page_content %}
+
+    <div id="room_online_user" class="user_status">
+        <p>Talk With Robot</p>
+        <div class="user_list">
+        <span>Robot</span>
+        </div>
+    </div>
+
+<style>
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+</style>
+
+<script>
+function loadXMLDoc() {
+    var xmlhttp;
+    var form = new FormData(document.getElementById("post_content"));
+    var content = document.getElementById("myInput").value;
+    var rooms = document.getElementById("room").innerHTML;
+   if (window.XMLHttpRequest)
+   {
+        xmlhttp=new XMLHttpRequest();
+    }
+   else
+   {
+       xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+   xmlhttp.onreadystatechange=function () {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            myObj = JSON.parse(this.responseText);
+{#            document.getElementById("initSpan").innerHTML=xmlhttp.responseText;#}
+            $("#content").append('<tbody> <tr valign="top"> <td> <font color="#999999">{{ t }}</font> </td> <td id="td1"><b>You :</b> <span id="mySpan"></span></td> </tr> </tbody> </table>').attr("span").text(myObj.yousay);
+{#            $("#td1").children("span").attr("id","mySpan" + ($("span").length +1) )#}
+            $("#content").append('<tbody> <tr valign="top"> <td> <font color="#999999">{{ t }}</font> </td> <td id="td2"><b>Duck :</b> <span id="duckSpan"></span></td> </tr> </tbody> </table>').attr("span").text(myObj.robotsay);
+{#            $("#td2").children("span").attr("id","duckSpan" + ($("span").length +1) )#}
+{#            document.getElementById("mySpan").innerHTML = myObj.yousay;#}
+{#            $("#td1").children("span").text(myObj.yousay);#}
+{#            $("#td2").children("span").text(myObj.robotsay);#}
+{#            document.getElementById("duckSpan").innerHTML = myObj.robotsay;#}
+{#            $("#content").clone().attr("id", "initSpan" + ($("span").length + 1)).insertAfter($("#content")).text(myObj.yousay);#}
+{#            $("#content").clone().attr("id", "initSpan" + ($("span").length + 1)).insertAfter($("#content")).text(myObj.robotsay);#}
+        }
+    }
+    xmlhttp.open("GET", "/api/talk-robot/" + content + "/" + rooms, true);
+    xmlhttp.send();
+}
+function reset(){
+    document.getElementById("myInput").reset();
+}
+</script>
+<div id="room">{{ room }}</div>
+    <div id="ChatContainer">
+    <div id="messages">
+        <table id="content" cellpadding="0" cellspacing="0">
+            <tbody>
+            <tr valign="top">
+                <td>
+                    <font color="#999999">{{ t }}</font>
+                </td>
+                <td><b>Duck :</b> <span id="initSpan">HELLO</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+
+    <br>
+    <br>
+{#	<form action="{{ url_for('api.talk_robot') }}" method="POST" id="post_content">#}
+    <form method="POST" id="post_content">
+		<input id="myInput" name="content" type="TEXT" style="width:300px"/>
+		<input type="hidden" name="room_id" />
+		<input type="button" value="发言" onclick="loadXMLDoc(reset)"/>
+	</form>
+
+{#      <form action="" method="post" name="submit">#}
+{#      {{ form.hidden_tag() }}#}
+{#      <p>#}
+{#          Please enter your message:<br>#}
+{#          {{ form.body(size=80) }}<br>#}
+{#          {% for error in form.body.errors %}#}
+{#            <span style="color: red;">[{{ error }}]</span>#}
+{#          {% endfor %}<br>#}
+{#      </p>#}
+{#      <p><input type="submit" value="Submit" onclick="loadXMLDoc()"></p>#}
+{#  </form>#}
+{#    <div>#}
+{#    {{ wtf.quick_form(form) }}#}
+{#    </div>#}
+{% endblock %}

@@ -162,7 +162,7 @@
                </div>
           <div class="tag-wrap">
             TAG:
-            <a href="#" class="label label-default">{{ post.original }}</a>
+            <a href="{{ url_for('main.author_search', authorname=post.original) }}" class="label label-default">{{ post.original }}</a>
             <a href="#" class="label label-primary">{{ post.tag }}</a>
             <span class="label label-success">Views: {{ post.readtimes }}</span>
           </div>

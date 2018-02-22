@@ -23,10 +23,10 @@
         {% endif %}
             <li class="menu-item-has-children"><a href="#">Author</a>
               <ul>
-                <li><a href="#">Jin Yong</a></li>
-                <li><a href="#">Gu Long</a></li>
-                <li><a href="#">周传雄</a></li>
-                <li><a href="#">河图</a></li>
+                <li><a href="{{ url_for('main.author_search', authorname='Jin Yong') }}">Jin Yong</a></li>
+                <li><a href="{{ url_for('main.author_search', authorname='Gu Long') }}">Gu Long</a></li>
+                <li><a href="{{ url_for('main.author_search', authorname='Tang Jia san shao') }}">Tang Jia san shao</a></li>
+                <li><a href="#">Liang Yusheng</a></li>
                 <li><a href="#">薛之谦</a></li>
               </ul>
             </li>
@@ -82,9 +82,9 @@
         {% endif %}
           <li class="menu-item-has-children"><a href="#">Author</a>
             <ul>
-              <li><a href="#">Jin Yong</a></li>
-              <li><a href="#">Gu Long</a></li>
-              <li><a href="#">周传雄</a></li>
+              <li><a href="{{ url_for('main.author_search', authorname='Jin Yong') }}">Jin Yong</a></li>
+              <li><a href="{{ url_for('main.author_search', authorname='Gu Long') }}">Gu Long</a></li>
+              <li><a href="{{ url_for('main.author_search', authorname='Tang Jia san shao') }}">Tang Jia san shao</a></li>
               <li><a href="#">河图</a></li>
               <li><a href="#">薛之谦</a></li>
             </ul>

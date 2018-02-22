@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}KungFu World - Author List{% endblock %}
+
+{% block content %}
+    <div class="comment-wrap" id="comments">
+
+    {% if results %}
+{% for post in results %}
+      <article class="post-entry">
+        <div class="featured-media text-center">
+          <a href="{{ url_for('.post', id=post.id)}}"><img src="{{ post.picture }}" class="img-responsive" alt="" width="1200" height="800" /></a>
+        </div>
+        <!-- post content -->
+        <div class="entry-content-wrap">
+          <h3 class="title"><a href="{{ url_for('.post', id=post.id)}}">{{ post.postname }}</a></h3>
+          <div class="post-content text-content">
+            <p>
+             {% if post.body_html %}
+               {{ post.body_html[:222] | safe }}
+            {% else %}
+               {{ post.body[:222] }}
+            {% endif %}&#8230;</p>
+          </div>
+                <div class="post-footer">
+               {% if current_user == post.author %}
+               <a href="{{ url_for('main.edit', id=post.id) }}" class="label label-primary" style="float:right">Edit</a>
+               {% endif %}
+               {% if current_user.is_administrator() %}
+               <a href="{{ url_for('main.edit', id=post.id) }}" class="label label-danger" style="float:right">Edit [Admin]</a>
+               {% endif %}
+               </div>
+          <div class="post-meta">
+            <span class="author">By <a href="{{ url_for('.user', username=post.author.username) }}" title="Posts by {{ post.author.username }}" rel="author">{{ post.author.username }}</a></span>
+            <span class="date">- On <a href="#">{{ post.timestamp }}</a></span>
+          </div>
+        </div>
+      </article>
+        {% endfor %}
+    {% elif not results %}
+        <h2>No Result For "{{ query }}"</h2>
+    {% endif %}
+    </div>
+{% endblock %}
+
+{% block pagination %}
+<div class="pagination-wrap clearfix" role="navigation"></div>
+{% endblock %}

@@ -23,6 +23,12 @@ import os
 #from ..API.queryIP import queryip
 from ..api.check_mobile import checkMobile
 
+@main.route('/author/<authorname>')
+def author_search(authorname):
+    results = Post.query.filter_by(original=authorname).all()
+    return render_template('authorlist.html', results=results, query=authorname)
+
+
 @main.route('/search_result/<query>')
 def search_results(query):
     results = Post.query.msearch(query,fields=['body'],limit=20).all()

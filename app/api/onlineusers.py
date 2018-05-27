@@ -10,8 +10,8 @@ import time
 from datetime import datetime
 from config import config
 from flask import current_app
-rc = redis.from_url('redis://h:pd267e12c87bf8b379b46374c1c7a753bb1498ec6c3ad31b08007c1b878afb39b@ec2-34-236-65-51.compute-1.amazonaws.com:39539')
-
+#rc = redis.from_url('redis://h:pd267e12c87bf8b379b46374c1c7a753bb1498ec6c3ad31b08007c1b878afb39b@ec2-34-236-65-51.compute-1.amazonaws.com:39539')
+rc=redis.from_url('redis://h:p00f294fe37e130212ed6242c58f6961e4c41112c3aa00b15dbf4c165a975851f@ec2-54-86-200-206.compute-1.amazonaws.com:11759')
 #cfg = config[os.getenv('FLASK_CONFIG') or 'default']()
 
 def mark_online(user_id):

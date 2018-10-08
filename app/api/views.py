@@ -18,6 +18,24 @@ from todayonhistory import todayonhistory
 from talk_robot import talkrobot
 import time, json,sys
 from mongo_conn import Mongo_Conn
+from flask_restful import Resource, Api
+from ..models import Post, User, Comment
+
+@api.route('/api/v1.0/posts/')
+def get_posts():
+    posts = Post.query.all()
+    return jsonify({'posts': [post.to_json() for post in posts]})
+
+@api.route('/api/v1.0/users/')
+def get_users():
+    users = User.query.all()
+    return jsonify({'users': [user.to_json() for user in users]})
+
+@api.route('/api/v1.0/comments')
+def get_comments():
+    comments = Comment.query.all()
+    return jsonify({'comments': [comment.to_json() for comment in comments]})
+
 
 @api.route('/api/todayonhistory/enevts/<m>/<d>', methods=['GET', 'POST'])
 def querytoday(m, d):

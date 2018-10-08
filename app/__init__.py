@@ -60,6 +60,9 @@ def create_app(config_name):
     app.register_blueprint(chat_blueprint)
     from .aadmin import fadmin as fadmin_blueprint
     app.register_blueprint(fadmin_blueprint)
+    #from .RESTful_API_1_0 import API as api_1_0_blueprint
+    #app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0/')
+
     
     return app
 

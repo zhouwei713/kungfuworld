@@ -14,6 +14,7 @@ from datetime import datetime
 import hashlib
 from markdown import markdown
 import bleach
+from flask import url_for
 from bson.json_util import default
 #from PIL import Image
 #import flask_whooshalchemy as whooshalchemy
@@ -44,6 +45,18 @@ class Post(db.Model):
                         'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
         target.body_html = bleach.linkify(bleach.clean(markdown(value,output_format='html'),
                                                        tags=allowed_tags, strip=True))
+    def to_json(self):
+        json_post = {
+            'url': url_for('api.get_posts', id = self.id, _external = True),
+            'body': self.body,
+            'body_html': self.body_html,
+            'timestamp': self.timestamp,
+            'original': url_for('api.get_users', id = self.author_id, _external= True),
+            #'comments': url_for('api.get_comments', id = self.id, _external=True),
+            'comment_count': self.comments.count()
+        }
+        return json_post
+
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
     
@@ -213,6 +226,20 @@ class User(UserMixin,db.Model):
     
     def __repr__(self):
         return '<User %r>' % self.username
+
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_posts', id=self.id, _external=True),
+            'username': self.username,
+            'member_since': self.member_since,
+            'last_seen': self.last_seen,
+            #'posts': url_for('api.get_user_posts', id=self.id, _external=True),
+            #'followed_posts': url_for('api.get_user_followed_posts',
+             #                         id=self.id, _external=True),
+            'post_count': self.posts.count()
+        }
+        return json_user
+
     
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
@@ -236,6 +263,13 @@ class Comment(db.Model):
     disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    def to_json(self):
+        json_comment = {
+            'url': url_for('api.get_comments', id = self.id, _external=True),
+            'body': self.body,
+            'timestamp': self.timestamp,
+        }
     
 #     @staticmethod
 #     def on_changed_body(target, value, oldvalue, initiator):

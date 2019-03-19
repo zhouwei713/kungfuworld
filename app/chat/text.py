@@ -3,18 +3,22 @@ Created on 20171025
 
 @author: zhou
 '''
-#coding=utf-8
+# coding=utf-8
 
 import re
 
+
 def escape_text(txt):
     return txt.replace('<', '&lt;').replace('>', '&gt;')
+
 
 def make_re_url():
     url = ''
     return re.compile(url, re.VERBOSE | re.MULTILINE)
 
+
 RE_URL = make_re_url()
+
 
 def linkify(txt,
             shorten = True,
@@ -52,7 +56,7 @@ def linkify(txt,
             return url  # bad protocol, no linkify
 
         href = m.group(1)
-        #href = xhtml_unescape(href).strip()
+        # href = xhtml_unescape(href).strip()
         if not proto:
             href = "http://" + href   # no proto specified, use http
 
@@ -74,14 +78,14 @@ def linkify(txt,
             tb = True
 
         if tb:
-            params  += 'target="_blank"'
+            params += 'target="_blank"'
 
         # clip long urls. max_len is just an approximation
         max_len = 30
         if shorten and len(url) > max_len:
             before_clip = url[proto_len:]
             url = proto_part + host_part
-            #if len(parts) > 2:
+            # if len(parts) > 2:
                 # Grab the whole host part plus the first bit of the path
                 # The path is usually not that interesting once shortened
                 # (no more slug, etc), so it really just provides a little
@@ -95,8 +99,8 @@ def linkify(txt,
                 if len(p) < 4:
                     continue
                 break
-                #url = proto_part + host_part  + "/" + \
-                        #parts[1][:8].split('?')[0].split('.')[0]
+                # url = proto_part + host_part  + "/" + \
+                        # parts[1][:8].split('?')[0].split('.')[0]
 
             if len(url) > max_len * 1.5:  # still too long
                 url = url[:max_len]
@@ -119,7 +123,8 @@ def linkify(txt,
 
     return RE_URL.sub(make_link, txt)
 
+
 if __name__ == '__main__':
     txt = 'have a link test www.zhihu.com/question/19550224?noti_id=123 how about?'
     txt1 = 'hello http://tornadoweb.org!'
-    print linkify(txt)
+    print(linkify(txt))

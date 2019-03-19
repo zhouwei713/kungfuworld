@@ -15,16 +15,16 @@ from .models import Comet, rm_channel_placeholder
 from .text import linkify, escape_text
 from ..api.onlineusers import mark_online, get_online_users, get_user_last_activity
 
-#rc = redis.Redis()
+# rc = redis.Redis()
 
+'''
 @chat.before_app_request
 def mark_current_user_online():
     if request.headers.get('X-Forwarded-For'):
         mark_online(request.headers['X-Forwarded-For'])
     else:
         mark_online(request.remote_addr)
-
-
+'''
 
 @chat.route('/chat/index', methods=['GET', 'POST'])
 def chat_index():

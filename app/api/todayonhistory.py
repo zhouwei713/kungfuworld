@@ -4,15 +4,17 @@ Created on 20171117
 @author: zhou
 '''
 
-import urllib, urllib2, sys, json
+import urllib
+import sys
+import json
 
 def todayonhistory(m, d):
     uri = "http://history.muffinlabs.com/date/"
     month = str(m)
     day = str(d)
     url = uri + month + "/" + day
-    req = urllib2.Request(url)
-    resp = urllib2.urlopen(req)
+    req = urllib.Request(url)
+    resp = urllib.urlopen(req)
     content = resp.read()
     r = json.loads(content)
     return r['data']

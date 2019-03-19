@@ -16,13 +16,14 @@ from markdown import markdown
 import bleach
 from flask import url_for
 from bson.json_util import default
-#from PIL import Image
-#import flask_whooshalchemy as whooshalchemy
+# from PIL import Image
+# import flask_whooshalchemy as whooshalchemy
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 class Post(db.Model):
     __tablename__ = 'posts'
@@ -37,7 +38,7 @@ class Post(db.Model):
     picture = db.Column(db.Text)
     original = db.Column(db.Text)
     tag = db.Column(db.Text)
-    __searchable__ = ['body','original']
+    __searchable__ = ['body', 'original']
     
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -45,6 +46,7 @@ class Post(db.Model):
                         'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
         target.body_html = bleach.linkify(bleach.clean(markdown(value,output_format='html'),
                                                        tags=allowed_tags, strip=True))
+
     def to_json(self):
         json_post = {
             'url': url_for('api.get_posts', id = self.id, _external = True),
@@ -52,7 +54,7 @@ class Post(db.Model):
             'body_html': self.body_html,
             'timestamp': self.timestamp,
             'original': url_for('api.get_users', id = self.author_id, _external= True),
-            #'comments': url_for('api.get_comments', id = self.id, _external=True),
+            # 'comments': url_for('api.get_comments', id = self.id, _external=True),
             'comment_count': self.comments.count()
         }
         return json_post
@@ -87,13 +89,15 @@ class Role(db.Model):
     
     def __repr__(self):
         return '<Role %r>' % self.name
-    
+
+
 class Permission:
     FOLLOW = 0x01
     COMMENT = 0x02
     WRITE_ARTICLES = 0x04
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
+
 
 class Follow(db.Model):
     __tablename__ = 'follows'
@@ -102,7 +106,7 @@ class Follow(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
         
 
-class User(UserMixin,db.Model):
+class User(UserMixin, db.Model):
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
@@ -112,8 +116,7 @@ class User(UserMixin,db.Model):
                 self.role = Role.query.filter_by(default=True).first()
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
-            
-        
+
     __tablename__ = 'users'
     __searchable__ = ['username']
     id = db.Column(db.Integer, primary_key=True)
@@ -136,8 +139,7 @@ class User(UserMixin,db.Model):
     followers = db.relationship('Follow', foreign_keys=[Follow.followed_id], backref=db.backref('followed', lazy='joined'),
                                lazy='dynamic', cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-    
-    
+
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
@@ -233,9 +235,9 @@ class User(UserMixin,db.Model):
             'username': self.username,
             'member_since': self.member_since,
             'last_seen': self.last_seen,
-            #'posts': url_for('api.get_user_posts', id=self.id, _external=True),
-            #'followed_posts': url_for('api.get_user_followed_posts',
-             #                         id=self.id, _external=True),
+            # 'posts': url_for('api.get_user_posts', id=self.id, _external=True),
+            # 'followed_posts': url_for('api.get_user_followed_posts',
+            # id=self.id, _external=True),
             'post_count': self.posts.count()
         }
         return json_user
@@ -247,12 +249,15 @@ class AnonymousUser(AnonymousUserMixin):
     
     def is_administrator(self):
         return False
-    
+
+
 login_manager.anonymous_user = AnonymousUser
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 class Comment(db.Model):
     __tablename__ = 'comments'
@@ -278,8 +283,7 @@ class Comment(db.Model):
 #
 # db.event.listen(Comment.body, 'set', Comment.on_changed_body)
     
-    
-    
+
 class Alembic(db.Model):
     __tablename__ = 'alembic_version'
     version_num = db.Column(db.String(32), primary_key=True, nullable=False)
@@ -287,10 +291,7 @@ class Alembic(db.Model):
     @staticmethod
     def clear_A():
         for a in Alembic.query.all():
-            print a.version_num
+            print(a.version_num)
             db.session.delete(a)
         db.session.commit()
-        print '======== data in Table: Alembic cleared!'
-
-    
-    
+        print('======== data in Table: Alembic cleared!')

@@ -4,7 +4,7 @@ Created on 2017415
 @author: zhou
 '''
 
-#from datetime import datetime
+# from datetime import datetime
 from flask import render_template, session, redirect, url_for, current_app,flash, abort,request, make_response, g
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
@@ -16,12 +16,13 @@ from flask_login.utils import current_user
 from ..decorators import admin_required
 from ..decorators import admin_required, permission_required
 from jinja2.compiler import UndeclaredNameVisitor
-from forms import EditProfileAdminForm
-#from PIL import Image
+from .forms import EditProfileAdminForm
+# from PIL import Image
 import os
-#from ..useredis import mark_online, get_online_users, get_user_last_activity
-#from ..API.queryIP import queryip
+# from ..useredis import mark_online, get_online_users, get_user_last_activity
+# from ..API.queryIP import queryip
 from ..api.check_mobile import checkMobile
+
 
 @main.route('/author/<authorname>')
 def author_search(authorname):
@@ -34,6 +35,7 @@ def search_results(query):
     results = Post.query.msearch(query,fields=['body'],limit=20).all()
     return render_template('search_results.html',results=results,query=query)
 
+
 @main.route('/search', methods=['GET','POST'])
 def search():
     query = request.form.get('search','')
@@ -41,6 +43,7 @@ def search():
         return redirect(url_for('main.index'))
     else:
         return redirect(url_for('main.search_results', query=query))
+
 
 @main.route('/',methods=['GET','POST'])
 def index():
@@ -50,9 +53,11 @@ def index():
     posts = pagination.items
     return render_template('index.html',posts=posts, pagination=pagination)
 
+
 @main.route('/post/publish', methods=['GET', 'POST'])
 def publish_blog():
     return render_template('publish_blog.html')
+
 
 @main.route('/publish/post', methods=['GET', 'POST'])
 def publish_post():
@@ -67,7 +72,8 @@ def publish_post():
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.profile', username=current_user.username))
-    
+
+
 @main.route('/profile/<username>')
 @login_required
 def profile(username):
@@ -81,10 +87,12 @@ def profile(username):
     last = user.last_seen.strftime('%Y-%m-%d %H:%M:%S')
     return render_template('profile.html', user=user,posts=posts, pagination=pagination, last=last)
 
+
 @main.route('/manage-profile')
 @login_required
 def manage_profile():
     return render_template('manage_profile.html')
+
 
 @main.route('/user/<username>')
 def user(username):
@@ -96,6 +104,7 @@ def user(username):
                                                                      error_out=False)
     posts = pagination.items    
     return render_template('user.html', user=user,posts=posts, pagination=pagination)
+
 
 @main.route('/changepw',methods=['GET', 'POST'])
 @login_required
@@ -112,11 +121,13 @@ def changepw():
             flash('Enter invalid password')
     return render_template('/changepw.html',form=form)
 
+
 @main.route('/admin')
 @login_required
 @admin_required
 def admin_only():
     return "For admin only!"
+
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -134,7 +145,8 @@ def edit_profile():
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', form=form)
-    
+
+
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -162,13 +174,13 @@ def edit_profile_admin(id):
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
 
+
 @main.route('/admin/mange-user')
 @login_required
 @admin_required
 def manage_user():
     users = User.query.all()
     return render_template('manage_user.html', users=users)
-
 
 
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
@@ -190,6 +202,7 @@ def post(id):
         )
     comments = pagination.items
     return render_template('post.html', posts=[post], form=form, comments=comments, pagination=pagination)
+
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -215,6 +228,7 @@ def edit(id):
     form.tag.data = post.tag
     return render_template('edit_post.html', form=form, post=post)
 
+
 @main.route('/edit/post/delete/<int:id>')
 @login_required
 def edit_delete_post(id):
@@ -226,6 +240,7 @@ def edit_delete_post(id):
         db.session.delete(com)
     db.session.delete(post)
     return redirect(url_for('main.user', username=current_user.username))
+
 
 @main.route('/follow/<username>')
 @login_required
@@ -242,6 +257,7 @@ def follow(username):
     flash('You are now following %s.' % username)
     return redirect(url_for('.user', username=username))
 
+
 @main.route('/unfollow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
@@ -256,6 +272,7 @@ def unfollow(username):
     current_user.unfollow(user)
     flash('You are not following %s anymore.' % username)
     return redirect(url_for('.user', username=username))
+
 
 @main.route('/followers/<username>')
 def followers(username):
@@ -283,6 +300,7 @@ def followed_by(username):
                for item in pagination.items]    
     return render_template('followers.html', user=user, title="Followed by", endpoint='.followed_by', pagination=pagination, follows=follows)
 
+
 @main.route('/all')
 @login_required
 def show_all():
@@ -290,12 +308,14 @@ def show_all():
     resp.set_cookie('show_followed', '', max_age=30*24*60*60)
     return resp
 
+
 @main.route('/followed')
 @login_required
 def show_followed():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
     return resp
+
 
 @main.route('/moderate')
 @login_required
@@ -308,6 +328,7 @@ def moderate():
     comments = pagination.items
     return render_template('moderate.html', comments=comments, pagination=pagination, page=page)
 
+
 @main.route('/moderate/enable/<int:id>')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
@@ -317,6 +338,7 @@ def moderate_enable(id):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
 
 @main.route('/moderate/disable/<int:id>')
 @login_required

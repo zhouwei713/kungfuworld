@@ -6,6 +6,7 @@ Created on 2017415
 
 # from datetime import datetime
 from flask import render_template, session, redirect, url_for, current_app,flash, abort,request, make_response, g
+from flask import jsonify
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
 from . import main
@@ -13,7 +14,6 @@ from .forms import NameForm, ChangePw, EditProfileForm, EditProfileAdminForm, Po
 from datetime import datetime
 from flask_login import login_required
 from flask_login.utils import current_user
-from ..decorators import admin_required
 from ..decorators import admin_required, permission_required
 from jinja2.compiler import UndeclaredNameVisitor
 from .forms import EditProfileAdminForm
@@ -32,40 +32,45 @@ def author_search(authorname):
 
 @main.route('/search_result/<query>')
 def search_results(query):
-    results = Post.query.msearch(query,fields=['body'],limit=20).all()
-    return render_template('search_results.html',results=results,query=query)
+    results = Post.query.msearch(query, fields=['body'], limit=20).all()
+    return render_template('search_results.html', results=results, query=query)
 
 
-@main.route('/search', methods=['GET','POST'])
+@main.route('/search', methods=['GET', 'POST'])
 def search():
-    query = request.form.get('search','')
+    query = request.form.get('search', '')
     if query == '':
         return redirect(url_for('main.index'))
     else:
         return redirect(url_for('main.search_results', query=query))
 
 
-@main.route('/',methods=['GET','POST'])
+@main.route('/', methods=['GET', 'POST'])
 def index():
     page = request.args.get('page', 1, type=int)
     query = Post.query
-    pagination = query.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+    pagination = query.order_by(Post.timestamp.desc()).paginate(page,
+                                                                per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+                                                                error_out=False)
     posts = pagination.items
-    return render_template('index.html',posts=posts, pagination=pagination)
+    return render_template('index.html', posts=posts, pagination=pagination)
 
 
 @main.route('/post/publish', methods=['GET', 'POST'])
+@login_required
 def publish_blog():
     return render_template('publish_blog.html')
 
 
 @main.route('/publish/post', methods=['GET', 'POST'])
+@login_required
 def publish_post():
-    postname = request.form.get('postname','')
-    body = request.form.get('postbody','')
-    original = request.form.get('original','')
-    picture = request.form.get('picture','')
-    tag = request.form.get('tag','')
+    postname = request.form.get('postname', '')
+    body = request.form.get('postbody', '')
+    original = request.form.get('original', '')
+    picture = request.form.get('picture', '')
+    tag = request.form.get('tag', '')
+    print(body)
     if postname is not None and body is not None and current_user.can(Permission.WRITE_ARTICLES):
         post = Post(body=body, postname=postname, author=current_user._get_current_object(),
                     original=original, picture=picture, tag=tag)
@@ -74,18 +79,57 @@ def publish_post():
         return redirect(url_for('.profile', username=current_user.username))
 
 
+def add_ele(e):
+    return '<p>%s</p>' % e
+
+
+@main.route('/publish/api/post', methods=['POST'])
+def publish_api_post():
+    data = request.get_json()
+    print(request.data)
+    print(data)
+    if data['key'] is None or data['key'] != current_app.config['SECRET_KEY']:
+        return jsonify(
+            {
+                "code": 1000,
+                "message": "You have no permission to access this api"
+            }
+        ), 403
+    name = data['name']
+    chapter = data['chapter']
+    postname = data['postname']
+    get_body = data['postbody']
+    body_list = list(map(add_ele, get_body))
+    body = "".join(body_list)
+    original = data['original']
+    picture = data['picture']
+    tag = data['tag']
+    if postname is not None and body is not None:
+        post = Post(body=body, postname=name + '-' + chapter + '-' + postname, author_id=1,
+                    original=original, picture=picture, tag=tag)
+        db.session.add(post)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Success"
+            }
+        ), 200
+
+
 @main.route('/profile/<username>')
 @login_required
 def profile(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         abort(404)
-    page = request.args.get('page',1, type=int)
-    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+    page = request.args.get('page', 1, type=int)
+    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(page,
+                                                                per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
                                                                      error_out=False)
     posts = pagination.items
     last = user.last_seen.strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('profile.html', user=user,posts=posts, pagination=pagination, last=last)
+    return render_template('profile.html', user=user, posts=posts, pagination=pagination, last=last)
 
 
 @main.route('/manage-profile')
@@ -100,7 +144,8 @@ def user(username):
     if user is None:
         abort(404)
     page = request.args.get('page',1, type=int)
-    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(page,
+                                                                per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
                                                                      error_out=False)
     posts = pagination.items    
     return render_template('user.html', user=user,posts=posts, pagination=pagination)
@@ -119,7 +164,7 @@ def changepw():
             return redirect(url_for('main.profile'))
         else:
             flash('Enter invalid password')
-    return render_template('/changepw.html',form=form)
+    return render_template('/changepw.html', form=form)
 
 
 @main.route('/admin')
@@ -281,9 +326,11 @@ def followers(username):
         flash('Invalid user.')
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
-    pagination = user.followers.paginate(page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'], error_out=False)
+    pagination = user.followers.paginate(page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+                                         error_out=False)
     follows = [{'user':item.follower, 'timestamp':item.timestamp} for item in pagination.items]
-    return render_template('followers.html', user=user, title="Followers of", endpoint='.followers', pagination=pagination, follows=follows)
+    return render_template('followers.html', user=user, title="Followers of", endpoint='.followers',
+                           pagination=pagination, follows=follows)
 
 
 @main.route('/followed-by/<username>')
@@ -298,7 +345,8 @@ def followed_by(username):
         error_out=False)
     follows = [{'user': item.followed, 'timestamp': item.timestamp}
                for item in pagination.items]    
-    return render_template('followers.html', user=user, title="Followed by", endpoint='.followed_by', pagination=pagination, follows=follows)
+    return render_template('followers.html', user=user, title="Followed by", endpoint='.followed_by',
+                           pagination=pagination, follows=follows)
 
 
 @main.route('/all')
@@ -323,7 +371,7 @@ def show_followed():
 def moderate():
     page = request.args.get('page', 1, type=int)
     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
-        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],error_out=False
+        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'], error_out=False
         )
     comments = pagination.items
     return render_template('moderate.html', comments=comments, pagination=pagination, page=page)

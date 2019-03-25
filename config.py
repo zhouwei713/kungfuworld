@@ -16,7 +16,7 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     FLASKY_MAIL_SUBJECT_PREFIX = '[KungFuWorld]'
     FLASKY_MAIL_SENDER = 'kungfurealm@gmail.com'
-    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
+    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN') or 'mowuxue1989@163.com'
     FLASKY_POSTS_PER_PAGE = 5
     UPLOAD_FOLDER = os.getcwd() + '\\app\\static\\avatar\\'
     FLASKY_FOLLOWERS_PER_PAGE = 5

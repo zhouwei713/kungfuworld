@@ -28,7 +28,8 @@ def send_email(to, subject, template, **kwargs):
     thr.start()
     return thr
 
-def send_mail(to , subject, template, **kwargs):
+
+def send_mail(to, subject, template, **kwargs):
     app = current_app._get_current_object()
     sg = sendgrid.SendGridAPIClient(apikey='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')
     msg = Message(app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + ' ' + subject,

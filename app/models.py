@@ -49,11 +49,11 @@ class Post(db.Model):
 
     def to_json(self):
         json_post = {
-            'url': url_for('api.get_posts', id = self.id, _external = True),
+            'url': url_for('api.get_posts', id=self.id, _external = True),
             'body': self.body,
             'body_html': self.body_html,
             'timestamp': self.timestamp,
-            'original': url_for('api.get_users', id = self.author_id, _external= True),
+            'original': url_for('api.get_users', id=self.author_id, _external= True),
             # 'comments': url_for('api.get_comments', id = self.id, _external=True),
             'comment_count': self.comments.count()
         }
@@ -279,7 +279,8 @@ class Comment(db.Model):
 #     @staticmethod
 #     def on_changed_body(target, value, oldvalue, initiator):
 #         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'strong']
-#         target.body_html =  bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags,strip=True))
+#         target.body_html =  bleach.linkify(bleach.clean(markdown(value, output_format='html'),
+#              tags=allowed_tags,strip=True))
 #
 # db.event.listen(Comment.body, 'set', Comment.on_changed_body)
     

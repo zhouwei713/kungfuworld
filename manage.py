@@ -14,15 +14,15 @@ from flask import request, current_app
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
-migrate = Migrate(app, db)
+# migrate = Migrate(app, db)
 
 
 def make_shell_context():
-    return dict(app=app,db=db, User=User, Role=Role, Comment=Comment, Post=Post, Permission=Permission, Follow=Follow)
+    return dict(app=app, db=db, User=User, Role=Role, Comment=Comment, Post=Post, Permission=Permission, Follow=Follow)
 
 
 manager.add_command("shell", Shell(make_context=make_shell_context))
-manager.add_command('db', MigrateCommand)
+# manager.add_command('db', MigrateCommand)
 manager.add_command("runserver", Server(use_debugger=True, host='0.0.0.0', port='9980'))
 
 
@@ -38,7 +38,8 @@ def deploy():
     # p = Post.query.all()
     # print p
     # page = request.args.get('page',1, type=int)
-    # pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],error_out=False)
+    # pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page,
+    # per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],error_out=False)
     # print pagination
 
 
@@ -50,5 +51,5 @@ def clearAlembic():
 
 
 if __name__ == '__main__':
-    manager.run()
+    manager.run(default_command='runserver')
 

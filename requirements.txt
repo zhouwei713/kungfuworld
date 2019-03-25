@@ -40,3 +40,5 @@ flask-msearch==0.1.5
 whoosh==2.7.4
 gevent==1.2.2
 Flask-Admin==1.5.0
+googletrans==2.4.0
+hyper==0.7.0

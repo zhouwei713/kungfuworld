@@ -5,7 +5,7 @@ Created on 2017415
 '''
 
 # from datetime import datetime
-from flask import render_template, session, redirect, url_for, current_app,flash, abort,request, make_response, g
+from flask import render_template, session, redirect, url_for, current_app, flash, abort, request, make_response, g
 from flask import jsonify
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
@@ -66,13 +66,14 @@ def publish_blog():
 @login_required
 def publish_post():
     postname = request.form.get('postname', '')
+    novelname = request.form.get('novelname', '')
     body = request.form.get('postbody', '')
     original = request.form.get('original', '')
     picture = request.form.get('picture', '')
     tag = request.form.get('tag', '')
-    print(body)
+    # print(body)
     if postname is not None and body is not None and current_user.can(Permission.WRITE_ARTICLES):
-        post = Post(body=body, postname=postname, author=current_user._get_current_object(),
+        post = Post(body=body, postname=postname, author=current_user._get_current_object(), novelname=novelname,
                     original=original, picture=picture, tag=tag)
         db.session.add(post)
         db.session.commit()
@@ -86,8 +87,6 @@ def add_ele(e):
 @main.route('/publish/api/post', methods=['POST'])
 def publish_api_post():
     data = request.get_json()
-    print(request.data)
-    print(data)
     if data['key'] is None or data['key'] != current_app.config['SECRET_KEY']:
         return jsonify(
             {
@@ -97,18 +96,27 @@ def publish_api_post():
         ), 403
     name = data['name']
     chapter = data['chapter']
+    print(chapter)
     postname = data['postname']
+    novelname = data['novelname']
     get_body = data['postbody']
     body_list = list(map(add_ele, get_body))
     body = "".join(body_list)
     original = data['original']
     picture = data['picture']
+    author_id = data['author_id']
     tag = data['tag']
     if postname is not None and body is not None:
-        post = Post(body=body, postname=name + '-' + chapter + '-' + postname, author_id=1,
-                    original=original, picture=picture, tag=tag)
-        db.session.add(post)
-        db.session.commit()
+        if chapter is "" or name is "":
+            post = Post(body=body, postname=postname, author_id=author_id,
+                        original=original, picture=picture, tag=tag, novelname=novelname)
+            db.session.add(post)
+            db.session.commit()
+        else:
+            post = Post(body=body, postname=name + '-' + chapter + '-' + postname, author_id=1,
+                        original=original, picture=picture, tag=tag, novelname=novelname)
+            db.session.add(post)
+            db.session.commit()
         return jsonify(
             {
                 "code": 200,
@@ -132,6 +140,30 @@ def profile(username):
     return render_template('profile.html', user=user, posts=posts, pagination=pagination, last=last)
 
 
+@main.route('/novelnamelist/<novelname>')
+def novel_by_name(novelname):
+    page = request.args.get('page', 1, type=int)
+    novel = Post.query.filter_by(novelname=novelname).paginate(page,
+                                                                per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+                                                                     error_out=False)
+    if novel is None:
+        abort(404)
+    posts = novel.items
+    return render_template('novel_list_by_name.html', posts=posts, novelname=novelname)
+
+
+@main.route('/noveltaglist/<tag>')
+def novel_by_tag(tag):
+    page = request.args.get('page', 1, type=int)
+    novel = Post.query.filter_by(tag=tag).paginate(page,
+                                                    per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+                                                            error_out=False)
+    if novel is None:
+        abort(404)
+    posts = novel.items
+    return render_template('novel_list_by_tag.html', posts=posts, tag=tag)
+
+
 @main.route('/manage-profile')
 @login_required
 def manage_profile():
@@ -143,12 +175,12 @@ def user(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         abort(404)
-    page = request.args.get('page',1, type=int)
+    page = request.args.get('page', 1, type=int)
     pagination = user.posts.order_by(Post.timestamp.desc()).paginate(page,
                                                                 per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
                                                                      error_out=False)
-    posts = pagination.items    
-    return render_template('user.html', user=user,posts=posts, pagination=pagination)
+    posts = pagination.items
+    return render_template('user.html', user=user, posts=posts, pagination=pagination)
 
 
 @main.route('/changepw',methods=['GET', 'POST'])
@@ -225,6 +257,7 @@ def edit_profile_admin(id):
 @admin_required
 def manage_user():
     users = User.query.all()
+    print(users)
     return render_template('manage_user.html', users=users)
 
 
@@ -234,6 +267,11 @@ def post(id):
     post.readtimes += 1
     form = CommentForm()
     if form.validate_on_submit():
+        if current_user.is_authenticated is False:
+            comment = Comment(body=form.body.data, post=post)
+            db.session.add(comment)
+            db.session.commit()
+            return redirect(url_for('.post', id=post.id, page=-1))
         comment = Comment(body=form.body.data, post=post, author=current_user._get_current_object())
         db.session.add(comment)
         db.session.commit()
@@ -241,7 +279,7 @@ def post(id):
         return redirect(url_for('.post', id=post.id, page=-1))
     page = request.args.get('page', 1, type=int)
     if page == -1:
-        page = (post.comments.count() -1) // current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+        page = (post.comments.count() - 1) // current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
     pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'], error_out=False
         )
@@ -259,6 +297,7 @@ def edit(id):
     if form.validate_on_submit():
         post.body = form.body.data
         post.postname = form.postname.data
+        post.novelname = form.noveLname.data
         post.original = form.original.data
         post.picture = form.picture.data
         post.tag = form.tag.data
@@ -268,6 +307,7 @@ def edit(id):
         return redirect(url_for('.post', id=post.id))
     form.body.data = post.body
     form.postname.data = post.postname
+    form.noveLname.data = post.novelname
     form.original.data = post.original
     form.picture.data = post.picture
     form.tag.data = post.tag
@@ -397,11 +437,3 @@ def moderate_disable(id):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
-
-
-
-    
-    
-    
-    
-    

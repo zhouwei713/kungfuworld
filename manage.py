@@ -14,7 +14,7 @@ from flask import request, current_app
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
-# migrate = Migrate(app, db)
+migrate = Migrate(app, db)
 
 
 def make_shell_context():
@@ -22,7 +22,7 @@ def make_shell_context():
 
 
 manager.add_command("shell", Shell(make_context=make_shell_context))
-# manager.add_command('db', MigrateCommand)
+manager.add_command('db', MigrateCommand)
 manager.add_command("runserver", Server(use_debugger=True, host='0.0.0.0', port='9980'))
 
 

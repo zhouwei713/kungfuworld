@@ -3,7 +3,8 @@ Created on 2017415
 
 @author: zhou
 '''
-from wtforms import StringField, SubmitField, validators, PasswordField, TextAreaField,BooleanField, SelectField, FileField
+from wtforms import StringField, SubmitField, validators, PasswordField, TextAreaField, \
+    BooleanField, SelectField, FileField
 from wtforms.validators import Required, EqualTo, Length, Regexp, Email, DataRequired
 from flask_wtf import FlaskForm
 from werkzeug.routing import ValidationError
@@ -25,17 +26,18 @@ class ChangePw(FlaskForm):
 
 
 class EditProfileForm(FlaskForm):
-    #avatar = FileField('Profile Picture')
+    # avatar = FileField('Profile Picture')
     name = StringField('Real Name', validators=[Length(0, 64)])
-    location = StringField('Location', validators=[Length(0,64)])
+    location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About ma')
     submit = SubmitField('Submit')
 
 
 class EditProfileAdminForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(),Length(1, 64), Email()])
+    email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
     username = StringField('Username', validators=[DataRequired(), Length(1, 64),
-                                                   Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0 ,'Username must have only letters, numbers, dots or underscores')]
+                                                   Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                                                    'Username must have only letters, numbers, dots or underscores')]
                            )
     confirmed =BooleanField('Confirmed')
     role = SelectField('Role', coerce=int)
@@ -60,7 +62,8 @@ class EditProfileAdminForm(FlaskForm):
 
 class PostForm(FlaskForm):
     postname = StringField("Post Name", validators=[DataRequired()])
-    body = PageDownField("What's on yur mind?", validators=[DataRequired()])
+    noveLname = StringField('Novel Name', validators=[DataRequired()])
+    body = PageDownField("Post Your Novel?", validators=[DataRequired()])
     picture = StringField("Upload Your Picture")
     original = StringField("Original Author")
     tag = StringField("Tag")
@@ -68,14 +71,9 @@ class PostForm(FlaskForm):
 
 
 class CommentForm(FlaskForm):
-    body = StringField('', validators=[DataRequired()])
+    body = PageDownField('', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 
 class SearchForm(FlaskForm):
     search = StringField('search', validators=[DataRequired()])
-    
-    
-    
-        
-    

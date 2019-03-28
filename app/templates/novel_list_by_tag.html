@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% import "_macros.html" as macros %}
-{% block title %}Kung Fu Realm - Profile{% endblock %}
+{% block title %}Kung Fu Realm - Novel{% endblock %}
 
 {% block header %}
 <header class="site-header fixed" id="main-navbar">
@@ -22,7 +22,7 @@
         {% if current_user.is_administrator() %}
         <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
         {% endif %}
-            <li class="menu-item-has-children"><a href="#">Author</a>
+            <li class="menu-item-has-children current-menu-item"><a href="#">Author</a>
               <ul>
                 <li><a href="{{ url_for('main.author_search', authorname='Jin Yong') }}">Jin Yong</a></li>
                 <li><a href="{{ url_for('main.author_search', authorname='Gu Long') }}">Gu Long</a></li>
@@ -32,7 +32,7 @@
               </ul>
             </li>
            {% if current_user.is_authenticated %}
-            <li class="menu-item-has-children current-menu-item"><a href="#">About Me</a>
+            <li class="menu-item-has-children"><a href="#">About Me</a>
               <ul>
                 <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
                 {% if current_user.is_administrator() %}
@@ -83,7 +83,7 @@
         {% if current_user.is_authenticated %}
         <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
         {% endif %}
-          <li class="menu-item-has-children"><a href="#">Author</a>
+          <li class="menu-item-has-children current-menu-item"><a href="#">Author</a>
             <ul>
               <li><a href="#">Jin Yong</a></li>
               <li><a href="#">Gu Long</a></li>
@@ -93,7 +93,7 @@
             </ul>
           </li>
            {% if current_user.is_authenticated %}
-            <li class="menu-item-has-children current-menu-item"><a href="#">About Me</a>
+            <li class="menu-item-has-children"><a href="#">About Me</a>
               <ul>
                 <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
                 {% if current_user.is_administrator() %}
@@ -120,84 +120,22 @@
     </div>
   </div>
 </header>
+<br>
 {% endblock %}
+<br>
 {% block cover %}{% endblock %}
 
 {% block content %}
-    <br>
 <div class="comment-wrap" id="comments">
-<!-- avatar -->
-<div>
-<div class="col-md-4 widget-wrap">
-{% if current_user.user_avatar %}
-  <img class="img-rounded profile-thumbnail" src="{{ user.user_avatar }}">
-  {% endif %}
-  {% if not current_user.user_avatar %}
-  <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=152) }}">
-  {% endif %}
-</div>
-<!-- end avatar -->
-<!-- user name -->
-<div class="col-md-8 widget-wrap">
-    <h3>Blogger: {{ user.username }}</h3>
-    {% if user.name or user.location %}
-    <p>
-       {% if user.name %}<span class="glyphicon glyphicon-user" style="color: rgb(0, 0, 0); font-size: 10px;"></span> <span class="label label-success">{{ user.name }}</span></p>{% endif %}
-    <p>   {% if user.location %}<span class="glyphicon glyphicon-home" style="color: rgb(0, 0, 0); font-size: 10px;"> </span> <a href="http://maps.google.com/?q={{ user.location }}"><span class="label label-primary">{{ user.location }}</span></a>
-       {% endif %}
-    </p>
-    {% endif %}
-<!-- end user name -->
-<!-- other information -->
-    {% if current_user.is_administrator() %}
-    <p><span class="label label-warning">Contact me: <a href="mailto:{{ user.email }}">{{ user.email }}</a></span></p>
-    {% endif %}
-    {% if user.about_me %}<p><span class="label label-default">{{ user.about_me }}</span></p>{% endif %}
-    <p>Member Since: {{ user.member_since }}</p>
-    <p>Last Seen: {{ last }}</p>
-<!-- end other information -->
-<!-- blog count -->
-    <p>{{ user.posts.count() }} blog posts.</p>
-<!-- end blog count -->
-<!-- follow -->
-    <p>
-       {% if current_user.can(Permission.FOLLOW) and user != current_user %}
-          {% if not current_user.is_following(user) %}
-          <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary">Follow</a>
-          {% else %}
-          <a href="{{ url_for('.unfollow', username=user.username)}}" class="btn btn-default">Unfollow</a>
-          {% endif %}
-        {% endif %}
-       <a href="{{ url_for('.followers', username=user.username) }}">Followers: <span class="badge">{{ user.followers.count() }}</span> </a>
-       <a href="{{ url_for('.followed_by', username=user.username) }}">Following: <span class="badge">{{ user.followed.count() }}</span> </a>
-       {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %}
-         <span class="label label-default">Following you</span>
-         {% endif %}
-     </p>
-<!-- end follow -->
-<!-- edit profile -->
-    <p>
-    {% if user == current_user %}
-    <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
-    {% endif %}
-
-    {% if current_user.is_administrator() %}
-    <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">
-    Edit Profile [Admin]
-    </a>
-{% endif %}
-   </p>
-<!-- end edit profile -->
-</div>
-</div>
 {% if posts %}
-<h3>Posts by {{ user.username }}</h3>
+    <br>
+<h3>All Chapters of {{ tag }}</h3>
           <ol>
             {% for post in posts %}
               <li id="comment-4" class="comment-entry" >
               <article class="comment depth-1">
                 <header>
-                  <a href="{{ url_for('.profile', username=post.author.username) }}" target="_blank" class="pull-left">
+                  <a href="{{ url_for('main.profile', username=post.author.username) }}" target="_blank" class="pull-left">
                     <img alt='' src='{{ post.author.gravatar(size=40) }}' class='avatar' height='50' width='50' />
                   </a>
                   <div class="comment-details clearfix">

@@ -132,6 +132,11 @@
     <div class="cover-content-wrap align-center">
       <h1 class="post-title">{{ post.postname }}</h1>
       <div class="post-meta">
+          {% if post.novelname%}
+        <em><a href="{{ url_for('main.novel_by_name', novelname=post.novelname) }}" rel="category tag">{{ post.novelname }}</a></em>
+          {% endif%}
+      </div>
+       <div class="post-meta">
         <span class="author">Post By <a href="{{ url_for('.user', username=post.author.username) }}" title="" rel="author">{{ post.author.username }}</a></span>
         <span class="date">- {{ post.timestamp }}</span>
           {% if post.original %}
@@ -166,7 +171,7 @@
           <div class="tag-wrap">
             TAG:
             <a href="{{ url_for('main.author_search', authorname=post.original) }}" class="label label-default">{{ post.original }}</a>
-            <a href="#" class="label label-primary">{{ post.tag }}</a>
+            <a href="{{ url_for('main.novel_by_tag', tag=post.tag)}}" class="label label-primary">{{ post.tag }}</a>
             <span class="label label-success">Views: {{ post.readtimes }}</span>
           </div>
         </div>
@@ -181,12 +186,22 @@
               <li id="comment-4" class="comment-entry" >
               <article class="comment depth-1">
                 <header>
-                  <a href='{{ url_for('.profile', username=comment.author.username) }}' target="_blank" class="pull-left">
+                    {% if comment.author %}
+                  <a href="{{ url_for('.profile', username=comment.author.username) }}" target="_blank" class="pull-left">
                     <img alt='' src='{{ comment.author.gravatar(size=40) }}' class='avatar' height='50' width='50' />
                   </a>
+                    {% else %}
+                   <a class="pull-left">
+                    <img alt='' src='/static/tourist/tourist.jpg' class='avatar' height='50' width='50' />
+                  </a>
+                    {% endif %}
                   <div class="comment-details clearfix">
                     <div class="commenter-name">
-                      <a href='{{ url_for('.profile', username=comment.author.username) }}' target="_blank">{{ comment.author.username }}</a>
+                     {% if comment.author %}
+                      <a href="{{ url_for('.profile', username=comment.author.username) }}" target="_blank">{{ comment.author.username }}</a>
+                        {% else %}
+                        <a>Tourist</a>
+                        {% endif %}
                       {% if current_user.can(Permission.MODERATE_COMMENTS) %}
                      <a class="label label-default" {% if comment.id / 5 == 0 %}href="/moderate?page={{ pagination.total }}"{% else %}href="/moderate?page={{ pagination.total - 1 }}"{% endif %}>Manage Comment</a>
                      {% endif %}
@@ -205,7 +220,6 @@
                  {% endif %}
                   </p>
                 </div>
-{#                <a rel='nofollow' class='comment-reply-link' href='#respond' onclick='return addComment.moveForm( "comment-4", "4", "respond", "42" )' aria-label='回复 笔下光年'>回复</a>#}
               </article>
             </li>
               {% endfor %}
@@ -218,20 +232,12 @@
               {% endif %}
             <!-- #comment-## -->
           </ol>
-        {% if current_user.can(Permission.COMMENT) %}
           <div id="respond" class="comment-respond">
             <h5 id="reply-title" class="comment-reply-title">
               ADD COMMENT
             </h5>
               {{ wtf.quick_form(form) }}
           </div>
-            {% else %}
-            <div id="respond" class="comment-respond">
-            <h5 id="reply-title" class="comment-reply-title">
-              <a href="{{ url_for('auth.login') }}"> LOGIN TO</a> POST COMMENT
-            </h5>
-            </div>
-        {% endif %}
           <!-- #respond -->
         </div>
         <!-- end comment -->

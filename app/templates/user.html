@@ -200,12 +200,12 @@
               <li id="comment-4" class="comment-entry" >
               <article class="comment depth-1">
                 <header>
-                  <a href='{{ url_for('.profile', username=post.author.username) }}' target="_blank" class="pull-left">
+                  <a href="{{ url_for('.profile', username=post.author.username) }}" target="_blank" class="pull-left">
                     <img alt='' src='{{ post.author.gravatar(size=40) }}' class='avatar' height='50' width='50' />
                   </a>
                   <div class="comment-details clearfix">
                     <div class="commenter-name">
-                      <a href='{{ url_for('.profile', username=post.author.username) }}' target="_blank">{{ post.author.username }}</a>
+                      <a href="{{ url_for('.profile', username=post.author.username) }}" target="_blank">{{ post.author.username }}</a>
                     </div>
                     <span class="commenter-meta">{{ post.timestamp }}</span>
                   </div>
@@ -220,7 +220,6 @@
             {% endif %}&#8230;
                   </p>
                 </div>
-{#                <a rel='nofollow' class='comment-reply-link' href='#respond' onclick='return addComment.moveForm( "comment-4", "4", "respond", "42" )' aria-label='回复 笔下光年'>回复</a>#}
               </article>
             </li>
               {% endfor %}

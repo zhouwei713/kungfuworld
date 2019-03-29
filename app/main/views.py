@@ -126,7 +126,6 @@ def publish_api_post():
 
 
 @main.route('/profile/<username>')
-@login_required
 def profile(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -142,6 +141,7 @@ def profile(username):
 
 @main.route('/novelnamelist/<novelname>')
 def novel_by_name(novelname):
+    postname = Post.query.filter_by(novelname=novelname).first()
     page = request.args.get('page', 1, type=int)
     novel = Post.query.filter_by(novelname=novelname).paginate(page,
                                                                 per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
@@ -149,11 +149,13 @@ def novel_by_name(novelname):
     if novel is None:
         abort(404)
     posts = novel.items
-    return render_template('novel_list_by_name.html', posts=posts, novelname=novelname)
+    return render_template('novel_list_by_name.html', posts=posts,
+                           novelname=novelname, pagination=novel, postname=postname)
 
 
 @main.route('/noveltaglist/<tag>')
 def novel_by_tag(tag):
+    postname = Post.query.filter_by(tag=tag).first()
     page = request.args.get('page', 1, type=int)
     novel = Post.query.filter_by(tag=tag).paginate(page,
                                                     per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
@@ -161,7 +163,8 @@ def novel_by_tag(tag):
     if novel is None:
         abort(404)
     posts = novel.items
-    return render_template('novel_list_by_tag.html', posts=posts, tag=tag)
+    return render_template('novel_list_by_tag.html', posts=posts, tag=tag,
+                           pagination=novel, postname=postname)
 
 
 @main.route('/manage-profile')

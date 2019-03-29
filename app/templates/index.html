@@ -32,7 +32,7 @@
                </div>
           <div class="post-meta">
             <span class="author">By <a href="{{ url_for('.user', username=post.author.username) }}" title="Posts by {{ post.author.username }}" rel="author">{{ post.author.username }}</a></span>
-            <span class="date">- On {{ post.timestamp }}</span>
+            <span class="date">- On {{ moment(post.timestamp).format('LL') }}</span>
           </div>
         </div>
       </article>

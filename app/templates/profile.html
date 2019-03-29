@@ -157,8 +157,10 @@
     <p><span class="label label-warning">Contact me: <a href="mailto:{{ user.email }}">{{ user.email }}</a></span></p>
     {% endif %}
     {% if user.about_me %}<p><span class="label label-default">{{ user.about_me }}</span></p>{% endif %}
-    <p>Member Since: {{ user.member_since }}</p>
-    <p>Last Seen: {{ last }}</p>
+    <!--<p>Member Since: {{ user.member_since }}</p>-->
+    <p>Member Since: {{ moment(user.member_since).format('LLL') }}</p>
+    <!--<p>Last Seen: {{ last }}</p>-->
+    <p>Last Seen: {{ moment(user.last_seen).format('LLL') }}</p>
 <!-- end other information -->
 <!-- blog count -->
     <p>{{ user.posts.count() }} blog posts.</p>
@@ -208,7 +210,7 @@
                     <div class="commenter-name">
                       <a href="{{ url_for('.profile', username=post.author.username) }}" target="_blank">{{ post.author.username }}</a>
                     </div>
-                    <span class="commenter-meta">{{ post.timestamp }}</span>
+                    <span class="commenter-meta">{{ moment(post.timestamp).format('LL') }}</span>
                   </div>
                 </header>
                 <div class="comment-body">

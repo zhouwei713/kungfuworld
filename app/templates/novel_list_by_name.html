@@ -146,7 +146,7 @@
                     <div class="commenter-name">
                       <a href="{{ url_for('.profile', username=post.author.username) }}" target="_blank">{{ post.author.username }}</a>
                     </div>
-                    <span class="commenter-meta">{{ post.timestamp }}</span>
+                    <span class="commenter-meta">{{ moment(post.timestamp).format('LL') }}</span>
                   </div>
                 </header>
                 <div class="comment-body">
@@ -165,7 +165,7 @@
           </ol>
 {% if pagination %}
 <div class="pagination">
-  {{ macros.pagination_widget(pagination, '.profile', username=user.username) }}
+  {{ macros.pagination_widget(pagination, '.novel_by_name', novelname=postname.novelname) }}
 </div>
 {% endif %}
 {% endif %}

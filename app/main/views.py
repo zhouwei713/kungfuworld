@@ -22,6 +22,7 @@ import os
 # from ..useredis import mark_online, get_online_users, get_user_last_activity
 # from ..API.queryIP import queryip
 from ..api.check_mobile import checkMobile
+import random
 
 
 @main.route('/author/<authorname>')
@@ -53,7 +54,9 @@ def index():
                                                                 per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
                                                                 error_out=False)
     posts = pagination.items
-    return render_template('index.html', posts=posts, pagination=pagination)
+    # choice = random.sample(User.query.all(), 1)[0]
+    choice = random.sample(posts, 1)[0]
+    return render_template('index.html', posts=posts, pagination=pagination, choice=choice)
 
 
 @main.route('/post/publish', methods=['GET', 'POST'])
@@ -136,7 +139,8 @@ def profile(username):
                                                                      error_out=False)
     posts = pagination.items
     last = user.last_seen.strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('profile.html', user=user, posts=posts, pagination=pagination, last=last)
+    choice = random.sample(Post.query.all(), 1)[0]
+    return render_template('profile.html', user=user, posts=posts, pagination=pagination, last=last, choice=choice)
 
 
 @main.route('/novelnamelist/<novelname>')
@@ -149,8 +153,9 @@ def novel_by_name(novelname):
     if novel is None:
         abort(404)
     posts = novel.items
+    choice = random.sample(Post.query.all(), 1)[0]
     return render_template('novel_list_by_name.html', posts=posts,
-                           novelname=novelname, pagination=novel, postname=postname)
+                           novelname=novelname, pagination=novel, postname=postname, choice=choice)
 
 
 @main.route('/noveltaglist/<tag>')
@@ -163,8 +168,9 @@ def novel_by_tag(tag):
     if novel is None:
         abort(404)
     posts = novel.items
+    choice = random.sample(Post.query.all(), 1)[0]
     return render_template('novel_list_by_tag.html', posts=posts, tag=tag,
-                           pagination=novel, postname=postname)
+                           pagination=novel, postname=postname, choice=choice)
 
 
 @main.route('/manage-profile')
@@ -183,7 +189,8 @@ def user(username):
                                                                 per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
                                                                      error_out=False)
     posts = pagination.items
-    return render_template('user.html', user=user, posts=posts, pagination=pagination)
+    choice = random.sample(Post.query.all(), 1)[0]
+    return render_template('user.html', user=user, posts=posts, pagination=pagination, choice=choice)
 
 
 @main.route('/changepw',methods=['GET', 'POST'])
@@ -287,7 +294,9 @@ def post(id):
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'], error_out=False
         )
     comments = pagination.items
-    return render_template('post.html', posts=[post], form=form, comments=comments, pagination=pagination)
+    choice = random.sample(Post.query.all(), 1)[0]
+    return render_template('post.html', posts=[post], form=form, comments=comments,
+                           pagination=pagination, choice=choice)
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])

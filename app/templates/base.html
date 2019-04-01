@@ -185,6 +185,9 @@ body {
 <!-- end cover -->
 <!-- start main-content area -->
 {% block main_content %}
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="col-md-10">
 <section class="main-content-area">
   <div class="outer-container">
     <div class="inner-container">
@@ -204,6 +207,29 @@ body {
     </div>
   </div>
 </section>
+    </div>
+
+    <div class="col-md-2">
+      <section class="main-content-area">
+        <div class="outer-container">
+          <div class="inner-container">
+            <div class="comment-wrap">
+              <div class="panel-heading">Editor's Choice</div>
+              <div class="panel-body">
+                <div class="text-center">
+                     {% block choice %}
+                  None
+                    {% endblock %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+</div>
     {% endblock %}
 <!-- end main-content area -->
 <!-- start footer -->

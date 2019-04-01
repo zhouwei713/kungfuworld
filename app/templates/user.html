@@ -156,8 +156,8 @@
     <p><span class="label label-warning">Contact me: <a href="mailto:{{ user.email }}">{{ user.email }}</a></span></p>
     {% endif %}
     {% if user.about_me %}<p><span class="label label-default">{{ user.about_me }}</span></p>{% endif %}
-    <p>Member Since: {{ user.member_since }}</p>
-    <p>Last Seen: {{ last }}</p>
+    <p>Member Since: {{ moment(user.member_since).format('LLL') }}</p>
+    <p>Last Seen: {{ moment(user.last_seen).format('LLL') }}</p>
 <!-- end other information -->
 <!-- blog count -->
     <p>{{ user.posts.count() }} blog posts.</p>
@@ -207,7 +207,7 @@
                     <div class="commenter-name">
                       <a href="{{ url_for('.profile', username=post.author.username) }}" target="_blank">{{ post.author.username }}</a>
                     </div>
-                    <span class="commenter-meta">{{ post.timestamp }}</span>
+                    <span class="commenter-meta">{{ moment(post.timestamp).format('LL') }}</span>
                   </div>
                 </header>
                 <div class="comment-body">
@@ -236,6 +236,19 @@
 
 {% block pagination %}
 <div class="pagination-wrap clearfix" role="navigation"></div>
+{% endblock %}
+
+{% block choice %}
+{% if choice %}
+<div class="row">
+<a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}">
+    <img class="img-responsive" alt width="400" height="120" src="{{ choice.picture}}">
+</a>
+</div>
+<div class="row">
+    <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}"><h4>{{ choice.novelname}}</h4></a>
+</div>
+{% endif %}
 {% endblock %}
 
 

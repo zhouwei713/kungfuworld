@@ -32,7 +32,7 @@
                </div>
           <div class="post-meta">
             <span class="author">By <a href="{{ url_for('.user', username=post.author.username) }}" title="Posts by {{ post.author.username }}" rel="author">{{ post.author.username }}</a></span>
-            <span class="date">- On <a href="#">{{ post.timestamp }}</a></span>
+            <span class="date">- On <a href="#">{{ moment(post.timestamp).format('LL') }}</a></span>
           </div>
         </div>
       </article>
@@ -45,4 +45,25 @@
 
 {% block pagination %}
 <div class="pagination-wrap clearfix" role="navigation"></div>
+{% endblock %}
+
+{% block choice %}
+{% if choice %}
+<div class="comment-wrap">
+   <div class="panel-heading">Editor's Choice</div>
+        <div class="panel-body">
+           <div class="text-center">
+               <div class="row">
+                   <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}">
+                       <img class="img-responsive" alt width="400" height="120" src="{{ choice.picture}}">
+                   </a>
+               </div>
+               <div class="row">
+                   <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}"><h4>{{ choice.novelname}}</h4></a>
+               </div>
+           </div>
+        </div>
+</div>
+
+{% endif %}
 {% endblock %}

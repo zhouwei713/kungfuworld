@@ -28,7 +28,8 @@ import random
 @main.route('/author/<authorname>')
 def author_search(authorname):
     results = Post.query.filter_by(original=authorname).all()
-    return render_template('authorlist.html', results=results, query=authorname)
+    choice = random.sample(Post.query.all(), 1)[0]
+    return render_template('authorlist.html', results=results, query=authorname, choice=choice)
 
 
 @main.route('/search_result/<query>')

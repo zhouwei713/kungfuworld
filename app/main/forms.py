@@ -39,10 +39,10 @@ class EditProfileAdminForm(FlaskForm):
                                                    Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                                     'Username must have only letters, numbers, dots or underscores')]
                            )
-    confirmed =BooleanField('Confirmed')
+    confirmed = BooleanField('Confirmed')
     role = SelectField('Role', coerce=int)
-    name = StringField('Real Name', validators=[Length(0,64)])
-    location = StringField('Location', validators=[Length(0,64)])
+    name = StringField('Real Name', validators=[Length(0, 64)])
+    location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About me')
     submit = SubmitField('Submit')
     
@@ -58,6 +58,15 @@ class EditProfileAdminForm(FlaskForm):
     def validate_username(self, field):
         if field.data != self.user.username and User.query.filter_by(username=field.data).first():
             raise ValidationError('User already in use.')
+
+
+class AddUserForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
+    username = StringField('Username', validators=[DataRequired(), Length(1, 64),
+                                                   Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                                                    'Username must have only letters, numbers, dots or underscores')]
+                           )
+    submit = SubmitField('Submit')
 
 
 class PostForm(FlaskForm):

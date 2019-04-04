@@ -10,7 +10,7 @@ from flask import jsonify
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
 from . import main
-from .forms import NameForm, ChangePw, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, SearchForm
+from .forms import NameForm, ChangePw, EditProfileForm, PostForm, CommentForm, SearchForm, AddUserForm
 from datetime import datetime
 from flask_login import login_required
 from flask_login.utils import current_user
@@ -261,6 +261,27 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
+
+
+@main.route('/add-user', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_user():
+    form = AddUserForm()
+    print(form)
+    if form.validate_on_submit():
+        user = User(email=form.email.data, username=form.username.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Have add user successfully.')
+        return redirect(url_for('.user', username=user.username))
+    return render_template('adduser.html', form=form)
+
+
+@main.route('/test', methods=['GET', 'POST'])
+def tttest():
+    form = AddUserForm()
+    return render_template('adduser.html', form=form)
 
 
 @main.route('/admin/mange-user')

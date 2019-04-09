@@ -98,9 +98,8 @@ def publish_api_post():
                 "message": "You have no permission to access this api"
             }
         ), 403
-    name = data['name']
     chapter = data['chapter']
-    print(chapter)
+    # print(chapter)
     postname = data['postname']
     novelname = data['novelname']
     get_body = data['postbody']
@@ -111,13 +110,13 @@ def publish_api_post():
     author_id = data['author_id']
     tag = data['tag']
     if postname is not None and body is not None:
-        if chapter is "" or name is "":
+        if chapter is "":
             post = Post(body=body, postname=postname, author_id=author_id,
                         original=original, picture=picture, tag=tag, novelname=novelname)
             db.session.add(post)
             db.session.commit()
         else:
-            post = Post(body=body, postname=name + '-' + chapter + '-' + postname, author_id=1,
+            post = Post(body=body, postname=chapter + '-' + postname, author_id=1,
                         original=original, picture=picture, tag=tag, novelname=novelname)
             db.session.add(post)
             db.session.commit()
@@ -268,7 +267,6 @@ def edit_profile_admin(id):
 @admin_required
 def add_user():
     form = AddUserForm()
-    print(form)
     if form.validate_on_submit():
         user = User(email=form.email.data, username=form.username.data)
         db.session.add(user)
@@ -289,7 +287,6 @@ def tttest():
 @admin_required
 def manage_user():
     users = User.query.all()
-    print(users)
     return render_template('manage_user.html', users=users)
 
 

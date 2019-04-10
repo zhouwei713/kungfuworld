@@ -335,6 +335,7 @@ def edit(id):
         post.original = form.original.data
         post.picture = form.picture.data
         post.tag = form.tag.data
+        post.voice = form.voice.data
         db.session.add(post)
         db.session.commit()
         flash('The post has been updated.')
@@ -345,6 +346,7 @@ def edit(id):
     form.original.data = post.original
     form.picture.data = post.picture
     form.tag.data = post.tag
+    form.voice.data = post.voice
     return render_template('edit_post.html', form=form, post=post)
 
 

@@ -76,6 +76,7 @@ class PostForm(FlaskForm):
     picture = StringField("Upload Your Picture")
     original = StringField("Original Author")
     tag = StringField("Tag")
+    voice = StringField("voice")
     submit = SubmitField('Submit')
 
 

@@ -289,6 +289,38 @@
 
 {% endif %}
 {% endblock %}
+
+
+{% block playvoice %}
+{% if voice == 1 %}
+      <section class="main-content-area">
+        <div class="outer-container">
+          <div class="inner-container">
+            <div class="comment-wrap">
+              <div class="panel-heading">Listen Novel Now</div>
+              <div class="panel-body">
+                <div class="text-center">
+                    <div class="row">
+                       <img class="img-responsive" alt width="400" height="120" src="{{ posts[0].picture}}">
+                     </div>
+
+                  <audio controls style="width: 100%">
+
+                    <source src='/static/voice/shediaoyingxiongzhuan/ch1-shediaoyingxiongzhuan.mp3' >
+                        Your browser don't support audio element。
+                  </audio>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+{% endif %}
+{% endblock %}
+
+
 {% block script %}
 <link rel='stylesheet' href='/static/css/atom-one-dark.css' type='text/css' />
 <script type="text/javascript" src="/static/js/comment-reply.min.js"></script>

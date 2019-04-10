@@ -10,6 +10,7 @@
     enable_page_level_ads: true
   });
 </script>
+  <!--  Baidu Analytics -->
   <script>
 var _hmt = _hmt || [];
 (function() {
@@ -19,7 +20,15 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-137974999-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
+  gtag('config', 'UA-137974999-1');
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no" />
 <link rel="shortcut icon" href="/static/icon/background-dragonv2.jpg">
@@ -181,7 +190,7 @@ body {
 {% block cover %}
 <section class="cover cover-home has-image" style="background-image: url(/static/images/wuxia01.jpg);">
   <div class="cover-content-wrap text-center">
-    <h1 class="intro-title">Jin Yong - 《Dragon eight》</h1>
+    <h1 class="intro-title">Jin Yong - 《Demi-Gods and Semi-Devils》</h1>
     <P class="intro-description text-content">Although millions of people I go.</P>
   </div>
 {#<embed src="/static/music/no_tear_of_man.mp3" >#}
@@ -249,6 +258,9 @@ body {
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
+      {% block playvoice %}
+
+      {% endblock %}
     </div>
 
   </div>

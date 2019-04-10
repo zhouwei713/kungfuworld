@@ -293,6 +293,9 @@ def manage_user():
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
+    p_voice = post.voice
+    if post.voice != 1:
+        p_voice = 0
     post.readtimes += 1
     form = CommentForm()
     if form.validate_on_submit():
@@ -315,7 +318,7 @@ def post(id):
     comments = pagination.items
     choice = random.sample(Post.query.all(), 1)[0]
     return render_template('post.html', posts=[post], form=form, comments=comments,
-                           pagination=pagination, choice=choice)
+                           pagination=pagination, choice=choice, voice=p_voice)
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])

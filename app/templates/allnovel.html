@@ -1,7 +1,6 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% import "_macros.html" as macros %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% block title %}Kung Fu Realm - Author List{% endblock %}
+{% block title %}Kung Fu Realm - All Novel{% endblock %}
 
 {% block header %}
 <header class="site-header fixed" id="main-navbar">
@@ -20,15 +19,16 @@
         <nav class="main-menu" style="overflow:visible" id="main-menu">
           <ul id="menu-main-menu" class="menu">
             <li><a href="/">Home</a></li>
-              <li><a href="/allnovel">All Novel</a></li>
+              <li class="current-menu-item"><a href="/allnovel">All Novel</a></li>
         {% if current_user.is_administrator() %}
         <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
         {% endif %}
-            <li class="menu-item-has-children current-menu-item"><a href="#">Author</a>
+            <li class="menu-item-has-children"><a href="#">Author</a>
               <ul>
                 <li><a href="{{ url_for('main.author_search', authorname='Jin Yong') }}">Jin Yong</a></li>
                 <li><a href="{{ url_for('main.author_search', authorname='Gu Long') }}">Gu Long</a></li>
                 <li><a href="{{ url_for('main.author_search', authorname='Tang Jia san shao') }}">Tang Jia san shao</a></li>
+                <li><a href="#">Liang Yusheng</a></li>
               </ul>
             </li>
           </ul>
@@ -37,15 +37,14 @@
       <nav class="mobile-menu visible-sm visible-xs" id="mobile-menu">
         <ul id="menu-main-menu-1" class="menu">
           <li><a href="/">Home</a></li>
-            <li><a href="/allnovel">All Novel</a></li>
+            <li class="current-menu-item"><a href="/allnovel">All Novel</a></li>
         {% if current_user.is_authenticated %}
         <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
         {% endif %}
-          <li class="menu-item-has-children current-menu-item"><a href="#">Author</a>
+          <li class="menu-item-has-children"><a href="#">Author</a>
             <ul>
-              <li><a href="{{ url_for('main.author_search', authorname='Jin Yong') }}">Jin Yong</a></li>
-              <li><a href="{{ url_for('main.author_search', authorname='Gu Long') }}">Gu Long</a></li>
-              <li><a href="{{ url_for('main.author_search', authorname='Tang Jia san shao') }}">Tang Jia san shao</a></li>
+              <li><a href="#">Jin Yong</a></li>
+              <li><a href="#">Gu Long</a></li>
             </ul>
           </li>
         </ul>
@@ -59,17 +58,18 @@
 {% endblock %}
 
 {% block content %}
-    <div class="comment-wrap" id="comments">
+    {% for post in posts %}
 
-    {% if results %}
-{% for post in results %}
       <article class="post-entry">
         <div class="featured-media text-center">
-          <a href="{{ url_for('.post', id=post.id)}}"><img src="{{ post.picture }}" class="img-responsive" alt="" width="1200" height="800" /></a>
+          <a href="{{ url_for('.post', id=post.id)}}"><img src="{{ post.picture }}" class="img-responsive" alt="" width="1200" height="800"/></a>
         </div>
         <!-- post content -->
         <div class="entry-content-wrap">
           <h3 class="title"><a href="{{ url_for('.post', id=post.id)}}">{{ post.postname }}</a></h3>
+            {% if post.novelname %}
+            <em><a href="{{ url_for('main.novel_by_name', novelname=post.novelname) }}">{{ post.novelname }}</a></em>
+            {% endif %}
           <div class="post-content text-content">
             <p>
              {% if post.body_html %}
@@ -78,7 +78,7 @@
                {{ post.body[:222] }}
             {% endif %}&#8230;</p>
           </div>
-                <div class="post-footer">
+               <div class="post-footer">
                {% if current_user == post.author %}
                <a href="{{ url_for('main.edit', id=post.id) }}" class="label label-primary" style="float:right">Edit</a>
                {% endif %}
@@ -88,42 +88,40 @@
                </div>
           <div class="post-meta">
             <span class="author">By <a href="{{ url_for('.user', username=post.author.username) }}" title="Posts by {{ post.author.username }}" rel="author">{{ post.author.username }}</a></span>
-            <span class="date">- On <a href="#">{{ moment(post.timestamp).format('LL') }}</a></span>
+            <span class="date">- On {{ moment(post.timestamp).format('LL') }}</span>
           </div>
         </div>
       </article>
-        {% endfor %}
-    {% elif not results %}
-        <h2>No Result For "{{ query }}"</h2>
-    {% endif %}
-    </div>
-{% if pagination %}
-<div class="pagination"></div>
-{{ macros.pagination_widget(pagination, '.author_search', authorname=query) }}
-{% endif %}
-{% endblock %}
 
+    {% endfor %}
+{% endblock %}
 {% block pagination %}
-<div class="pagination-wrap clearfix" role="navigation"></div>
+    {% if pagination %}
+        <div class="pagination-wrap clearfix" role="navigation">
+       {{ macros.pagination_widget(pagination, '.all_novel') }}
+    </div>
+    {% endif %}
 {% endblock %}
-
 {% block choice %}
 {% if choice %}
 <div class="comment-wrap">
    <div class="panel-heading">Editor's Choice</div>
         <div class="panel-body">
            <div class="text-center">
-               <div class="row">
-                   <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}">
-                       <img class="img-responsive" alt width="400" height="120" src="{{ choice.picture}}">
-                   </a>
-               </div>
-               <div class="row">
-                   <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}"><h4>{{ choice.novelname}}</h4></a>
-               </div>
+              <div class="row">
+                 <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}">
+                          <img class="img-responsive" alt width="400" height="120" src="{{ choice.picture}}">
+                 </a>
+              </div>
+              <div class="row">
+                 <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}"><h4>{{ choice.novelname}}</h4></a>
+              </div>
            </div>
         </div>
 </div>
-
 {% endif %}
+{% endblock %}
+{% block script %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
 {% endblock %}

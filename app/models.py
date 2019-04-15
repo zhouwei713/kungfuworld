@@ -25,6 +25,19 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class Novel(db.Model):
+    __tablename__ = 'novels'
+    id = db.Column(db.Integer, primary_key=True)
+    novelname = db.Column(db.String(128))
+    description = db.Column(db.Text)
+    rate = db.Column(db.Integer, default=3)
+    picture = db.Column(db.Text)
+    viewtimes = db.Column(db.Integer)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    original = db.Column(db.Text)
+    category = db.Column(db.Text)
+
+
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
@@ -134,6 +147,7 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    novels = db.relationship('Novel', backref='author', lazy='dynamic')
     user_avatar = db.Column(db.String(128), default=None)
     diy_avatar = db.Column(db.Text)
     followed = db.relationship('Follow', foreign_keys=[Follow.follower_id], backref=db.backref('follower', lazy='joined'),

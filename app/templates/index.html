@@ -3,48 +3,160 @@
 {% block title %}Kung Fu Realm - index{% endblock %}
 
 {% block content %}
-    {% for post in posts %}
-
-      <article class="post-entry">
-        <div class="featured-media text-center">
-          <a href="{{ url_for('.post', id=post.id)}}"><img src="{{ post.picture }}" class="img-responsive" alt="" width="1200" height="800"/></a>
+                <div class="col-md-12">
+                    <div class="block-header mb30">
+                        <br>
+                        <div class="block-title">
+                        Wuxia Novels
+                        </div>
+                        <div class="block-description">
+                        WUXIA NOVELS SORTED BY:
+                            <a href="#">MOST VIEWED</a>| TOP RATED
+                        </div>
+                    </div>
+                </div>
+<div class="col-md-4">
+    <div class="popular-novels">
+        <div class="block-header">
+            <div class="block-title">
+                Popular Novels
+            </div>
         </div>
-        <!-- post content -->
-        <div class="entry-content-wrap">
-          <h3 class="title"><a href="{{ url_for('.post', id=post.id)}}">{{ post.postname }}</a></h3>
-            {% if post.novelname %}
-            <em><a href="{{ url_for('main.novel_by_name', novelname=post.novelname) }}">{{ post.novelname }}</a></em>
-            {% endif %}
-          <div class="post-content text-content">
-            <p>
-             {% if post.body_html %}
-               {{ post.body_html[:222] | safe }}
-            {% else %}
-               {{ post.body[:222] }}
-            {% endif %}&#8230;</p>
-          </div>
-                <div class="post-footer">
-               {% if current_user == post.author %}
-               <a href="{{ url_for('main.edit', id=post.id) }}" class="label label-primary" style="float:right">Edit</a>
-               {% endif %}
-               {% if current_user.is_administrator() %}
-               <a href="{{ url_for('main.edit', id=post.id) }}" class="label label-danger" style="float:right">Edit [Admin]</a>
-               {% endif %}
-               </div>
-          <div class="post-meta">
-            <span class="author">By <a href="{{ url_for('.user', username=post.author.username) }}" title="Posts by {{ post.author.username }}" rel="author">{{ post.author.username }}</a></span>
-            <span class="date">- On {{ moment(post.timestamp).format('LL') }}</span>
-          </div>
+        {% for top5 in top5_novels %}
+        <div class="popular-novel-item-block">
+            <div class="popular-novel-item-top clearfix">
+                <div class="title" style="box-sizing:border-box;width: 94%;margin-bottom: 0px;">
+                    <a href="{{ url_for('main.novel_by_name', novelname=top5.novelname)}}">{{ top5.novelname }}</a>
+                </div>
+                <div class="rating" style="box-sizing:border-box;width: 6%;float:right;">
+                    <a href="{{ url_for('main.novel_by_name', novelname=top5.novelname)}}">{{ top5.rate }}</a>
+                </div>
+            </div>
+            <div class="popular-novel-item-bottom">
+                <div class="progress">
+                    <div style="width:{{ top5.rate * 10 }}%; background-color: #FF9900" class="progress-bar"></div>
+                </div>
+            </div>
         </div>
-      </article>
-    {% endfor %}
-{% endblock %}
-{% block pagination %}
-    {% if pagination %}
-        <div class="pagination-wrap clearfix" role="navigation">
-       {{ macros.pagination_widget(pagination, '.index') }}
+        {% endfor %}
     </div>
-    {% endif %}
+
+    <div class="popular-novels">
+        <div class="block-header">
+            <div class="block-title">
+                Recent Chapters
+            </div>
+        </div>
+        {% for recent in top5_posts %}
+        <br>
+        <div class="latest-comment-item-block" style="background-image: url({{ recent.picture }}); background-size:290px 230px; background-repeat:no-repeat">
+            <div class="latest-comment-item-body" style="position: relative; border: 1px solid #f0f0f0; padding: 40px; border-radius: 2px;">
+                <div class="novel-title">
+                    <h4><em><a href="{{ url_for('main.novel_by_name', novelname=recent.novelname)}}">{{ recent.novelname }}</a></em></h4>
+                </div>
+                <div class="novel-comment">
+                    <a href="{{ url_for('.post', id=recent.id)}}"><p>{{ recent.postname }}</p></a>
+                </div>
+                <div class="novel-commentator">{{ recent.author.username }}</div>
+            </div>
+        </div>
+        {% endfor %}
+           <div class="block-header">
+            <div class="block-title">
+                <a href="/allnovel">More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+        {% for novel in novels %}
+        <div class="col-md-8" style="float:right;">
+              <div class="recent-post">
+                  <div class="top-novel-block">
+                    <div class="top-novel-header">
+                        <h2 itemprop="headline">
+                            <a itemprop="url" href="{{ url_for('main.novel_by_name', novelname=novel.novelname)}}">{{ novel.novelname }}</a>
+                        </h2>
+                    </div>
+                    <div class="top-novel-content">
+                        <div class="top-novel-cover">
+                            <a href="{{ url_for('main.novel_by_name', novelname=novel.novelname) }}" itemprop="image" itemscope itemtype="https://schema.org/ImageObject"><img src="{{ novel.picture }}"> </a>
+                        </div>
+                        <div class="top-novel-body">
+                            <div class="novel-item">
+                                <div class="label">
+                                    <span>
+                                        <strong>Author:</strong>
+                                    </span>
+                                </div>
+                                <div class="content"><a href="{{ url_for('.user', username=novel.author.username) }}">{{ novel.author.username}}</a></div>
+                            </div>
+                            <div class="novel-item">
+                                <div class="label">
+                                    <span>
+                                        <strong>Original:</strong>
+                                    </span>
+                                </div>
+                                {% if novel.original %}
+                                <div class="content"><a href="#">{{ novel.original}}</a></div>
+                                {% else %}
+                                <div class="content">N/A</div>
+                                {% endif %}
+                            </div>
+                            <div class="novel-item">
+                                <div class="label">
+                                    <span>
+                                        <strong>Rated:</strong>
+                                    </span>
+                                </div>
+                                <div class="content">{{ novel.rate}}</div>
+                            </div>
+                            <div class="novel-item">
+                                <div class="label">
+                                    <span>
+                                        <strong>Category:</strong>
+                                    </span>
+                                </div>
+                                <div class="content"><a href="{{ url_for('main.novel_by_tag', tag=novel.category)}}">{{ novel.category}}</a></div>
+                            </div>
+                            <div class="novel-item">
+                                <div class="label">
+                                    <span>
+                                        <strong>Description:</strong>
+                                    </span>
+                                </div>
+                                <div class="content"><p>{{ novel.description[:40] }}&#8230;</p></div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="post-footer">
+                    {% if current_user == novel.author %}
+                    <a href="{{ url_for('main.editnovel', id=novel.id) }}" class="label label-primary" style="float:right">Edit</a>
+                    {% endif %}
+                    {% if current_user.is_administrator() %}
+                    <a href="{{ url_for('main.editnovel', id=novel.id) }}" class="label label-danger" style="float:right">Edit [Admin]</a>
+                    {% endif %}
+               </div>
+              </div>
+        </div>
+            {% endfor %}
+
+
+      <!-- end post entry -->
+      <!-- start pagination -->
+{% block pagination %}
+    <div class="pagination-wrap clearfix" role="navigation">
+    </div>
+{% endblock %}
+      <!-- end pagination -->
+          <!-- start pagination -->
+        {% if pagination %}
+             <div class="col-md-8" style="float:right;">
+                {{ macros.pagination_widget(pagination, '.index') }}
+             </div>
+        {% endif %}
+        <!-- end pagination -->
 {% endblock %}
 {% block choice %}
 {% if choice %}
@@ -63,26 +175,9 @@
            </div>
         </div>
 </div>
-<!--
-<div>--------------------------------------------------------------</div>
-<div class="panel panel-default">
-   <div class="panel-heading">Novel Announcements</div>
-        <div class="panel-body">
-           <div class="text-center">
-              <div class="row">
-                 <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}">
-                          <img class="img-responsive" alt width="400" height="120" src="{{ choice.picture}}">
-                 </a>
-              </div>
-              <div class="row">
-                 <a href="{{ url_for('main.novel_by_name', novelname=choice.novelname)}}"><h4>{{ choice.novelname}}</h4></a>
-              </div>
-           </div>
-        </div>
-</div>
--->
 {% endif %}
 {% endblock %}
+
 {% block script %}
 {{ super() }}
 {{ pagedown.include_pagedown() }}

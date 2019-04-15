@@ -8,9 +8,9 @@ Created on 2017415
 from flask import render_template, session, redirect, url_for, current_app, flash, abort, request, make_response, g
 from flask import jsonify
 from .. import db
-from ..models import User, Role, Permission, Post, Comment
+from ..models import User, Role, Permission, Post, Comment, Novel
 from . import main
-from .forms import NameForm, ChangePw, EditProfileForm, PostForm, CommentForm, SearchForm, AddUserForm
+from .forms import NameForm, ChangePw, EditProfileForm, PostForm, CommentForm, SearchForm, AddUserForm, AddNovelForm
 from datetime import datetime
 from flask_login import login_required
 from flask_login.utils import current_user
@@ -28,8 +28,14 @@ import random
 @main.route('/author/<authorname>')
 def author_search(authorname):
     results = Post.query.filter_by(original=authorname).all()
+    query = Post.query.filter_by(original=authorname)
+    page = request.args.get('page', 1, type=int)
+    pagination = query.order_by(Post.timestamp.desc()).paginate(page,
+                                                                per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+                                                                error_out=False)
     choice = random.sample(Post.query.all(), 1)[0]
-    return render_template('authorlist.html', results=results, query=authorname, choice=choice)
+    return render_template('authorlist.html', results=results, query=authorname,
+                           choice=choice, pagination=pagination)
 
 
 @main.route('/search_result/<query>')
@@ -47,8 +53,8 @@ def search():
         return redirect(url_for('main.search_results', query=query))
 
 
-@main.route('/', methods=['GET', 'POST'])
-def index():
+@main.route('/allnovel', methods=['GET', 'POST'])
+def all_novel():
     page = request.args.get('page', 1, type=int)
     query = Post.query
     pagination = query.order_by(Post.timestamp.desc()).paginate(page,
@@ -57,7 +63,30 @@ def index():
     posts = pagination.items
     # choice = random.sample(User.query.all(), 1)[0]
     choice = random.sample(posts, 1)[0]
-    return render_template('index.html', posts=posts, pagination=pagination, choice=choice)
+    return render_template('allnovel.html', posts=posts, pagination=pagination, choice=choice)
+
+
+@main.route('/', methods=['GET', 'POST'])
+def index():
+    page = request.args.get('page', 1, type=int)
+    query = Novel.query
+    pagination = query.order_by(Novel.viewtimes.desc()).paginate(page,
+                                                                per_page=7,
+                                                                error_out=False)
+    novels = pagination.items
+    top_rate_novel = query.order_by(Novel.rate.desc()).all()
+    top5_novels = top_rate_novel[:5]
+    post_query = Post.query
+    post_pagination = post_query.order_by(Post.timestamp.desc()).paginate(page,
+                                                                per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+                                                                error_out=False)
+    posts = post_pagination.items
+    choice = random.sample(posts, 1)[0]
+    top_time_novel = post_query.order_by(Post.timestamp.desc()).all()
+    top5_posts = top_time_novel[:5]
+    return render_template('index.html', novels=novels,
+                           pagination=pagination, choice=choice,
+                           top5_novels=top5_novels, top5_posts=top5_posts)
 
 
 @main.route('/post/publish', methods=['GET', 'POST'])
@@ -154,8 +183,10 @@ def novel_by_name(novelname):
         abort(404)
     posts = novel.items
     choice = random.sample(Post.query.all(), 1)[0]
+    description = Novel.query.filter_by(novelname=novelname).first().description
     return render_template('novel_list_by_name.html', posts=posts,
-                           novelname=novelname, pagination=novel, postname=postname, choice=choice)
+                           novelname=novelname, pagination=novel,
+                           postname=postname, choice=choice, description=description)
 
 
 @main.route('/noveltaglist/<tag>')
@@ -276,10 +307,18 @@ def add_user():
     return render_template('adduser.html', form=form)
 
 
-@main.route('/test', methods=['GET', 'POST'])
-def tttest():
-    form = AddUserForm()
-    return render_template('adduser.html', form=form)
+@main.route('/add-novel', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_novel():
+    form = AddNovelForm()
+    if form.validate_on_submit():
+        novel = Novel(novelname=form.novelname.data, description=form.description.data, viewtimes=form.viewtimes.data,
+                      author_id=form.author_id.data, category=form.category.data, picture=form.picture.data)
+        db.session.add(novel)
+        db.session.commit()
+        return redirect(url_for('.index'))
+    return render_template('addnovel.html', form=form)
 
 
 @main.route('/admin/mange-user')
@@ -331,7 +370,7 @@ def edit(id):
     if form.validate_on_submit():
         post.body = form.body.data
         post.postname = form.postname.data
-        post.novelname = form.noveLname.data
+        post.novelname = form.novelname.data
         post.original = form.original.data
         post.picture = form.picture.data
         post.tag = form.tag.data
@@ -342,12 +381,43 @@ def edit(id):
         return redirect(url_for('.post', id=post.id))
     form.body.data = post.body
     form.postname.data = post.postname
-    form.noveLname.data = post.novelname
+    form.novelname.data = post.novelname
     form.original.data = post.original
     form.picture.data = post.picture
     form.tag.data = post.tag
     form.voice.data = post.voice
     return render_template('edit_post.html', form=form, post=post)
+
+
+@main.route('/editnovel/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editnovel(id):
+    novel = Novel.query.get_or_404(id)
+    if current_user != novel.author and not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = AddNovelForm()
+    if form.validate_on_submit():
+        novel.novelname = form.novelname.data
+        novel.description = form.description.data
+        novel.rate = form.rate.data
+        novel.original = form.original.data
+        novel.picture = form.picture.data
+        novel.viewtimes = form.viewtimes.data
+        novel.author_id = form.author_id.data
+        novel.category = form.category.data
+        db.session.add(novel)
+        db.session.commit()
+        flash('The post has been updated.')
+        return redirect(url_for('.index'))
+    form.novelname.data = novel.novelname
+    form.description.data = novel.description
+    form.rate.data = novel.rate
+    form.original.data = novel.original
+    form.picture.data = novel.picture
+    form.viewtimes.data = novel.viewtimes
+    form.author_id.data = novel.author_id
+    form.category.data = novel.category
+    return render_template('edit_novel.html', form=form, novel=novel)
 
 
 @main.route('/edit/post/delete/<int:id>')
@@ -361,6 +431,16 @@ def edit_delete_post(id):
         db.session.delete(com)
     db.session.delete(post)
     return redirect(url_for('main.user', username=current_user.username))
+
+
+@main.route('/edit/novel/delete/<int:id>')
+@login_required
+def edit_delete_novel(id):
+    novel = Novel.query.get_or_404(id)
+    if current_user != novel.author and not current_user.is_administrator:
+        abort(403)
+    db.session.delete(novel)
+    return redirect(url_for('main.index'))
 
 
 @main.route('/follow/<username>')

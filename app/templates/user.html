@@ -15,9 +15,10 @@
       </div>
       <div class="col-md-8 hidden-sm hidden-xs">
         <span class="line"></span>
-        <nav class="main-menu" id="main-menu">
+        <nav class="main-menu" style="overflow:visible" id="main-menu">
           <ul id="menu-main-menu" class="menu">
             <li><a href="/">Home</a></li>
+              <li><a href="/allnovel">All Novel</a></li>
         {% if current_user.is_administrator() %}
         <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
         {% endif %}
@@ -26,61 +27,15 @@
                 <li><a href="{{ url_for('main.author_search', authorname='Jin Yong') }}">Jin Yong</a></li>
                 <li><a href="{{ url_for('main.author_search', authorname='Gu Long') }}">Gu Long</a></li>
                 <li><a href="{{ url_for('main.author_search', authorname='Tang Jia san shao') }}">Tang Jia san shao</a></li>
-                <li><a href="#">河图</a></li>
-                <li><a href="#">薛之谦</a></li>
               </ul>
             </li>
-              <!--
-           {% if current_user.is_authenticated %}
-            <li class="menu-item-has-children"><a href="#">About Me</a>
-              <ul>
-                <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
-                {% if current_user.is_administrator() %}
-                    <li><a href="/admin">Admin Page</a></li>
-                <li><a href="{{ url_for('main.manage_user') }}">Manage User</a></li>
-                <li><a href="{{ url_for('api.online_user') }}">Online User</a></li>
-                <li><a href="{{ url_for('chat.chat_index') }}" target="_blank">Talk With Robot</a></li>
-               {% endif %}
-               <li><a href="{{ url_for('main.manage_profile') }}">Setting</a></li>
-               {% if current_user.can(Permission.MODERATE_COMMENTS) %}
-               <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
-               {% endif %}
-                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-              </ul>
-             </li>
-              {% else %}
-            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-              {% endif %}
-              -->
           </ul>
         </nav>
       </div>
-        <!--
-      <div class="col-md-2 col-xs-4 text-right">
-        <span class="search-toggle" id="search-button" data-toggle="modal" data-target="#searchmodal">
-          <i class="fa fa-search text-center"></i>
-        </span>
-        <span class="mobile-menu-toggle hidden-md hidden-lg" id="nav-toggle-button">
-          <i class="fa fa-bars text-center"></i>
-        </span>
-      </div>
-      <div id="search-wrap">
-        <form action="{{ url_for('main.search') }}" method="post" class="form-group search-form">
-          <div class="form-group clearfix">
-            <label class="sr-only" for="search">Search</label>
-            <div class="input-group">
-              <input type="text" name="search" id="search" value="" class="form-control required email search-input" placeholder="Please Type Search Word ...">
-              <div class="input-group-btn">
-                <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      -->
       <nav class="mobile-menu visible-sm visible-xs" id="mobile-menu">
         <ul id="menu-main-menu-1" class="menu">
           <li><a href="/">Home</a></li>
+            <li><a href="/allnovel">All Novel</a></li>
         {% if current_user.is_authenticated %}
         <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
         {% endif %}
@@ -89,32 +44,8 @@
               <li><a href="{{ url_for('main.author_search', authorname='Jin Yong') }}">Jin Yong</a></li>
               <li><a href="{{ url_for('main.author_search', authorname='Gu Long') }}">Gu Long</a></li>
               <li><a href="{{ url_for('main.author_search', authorname='Tang Jia san shao') }}">Tang Jia san shao</a></li>
-              <li><a href="#">河图</a></li>
-              <li><a href="#">薛之谦</a></li>
             </ul>
           </li>
-            <!--
-           {% if current_user.is_authenticated %}
-            <li class="menu-item-has-children current-menu-item"><a href="#">About Me</a>
-              <ul>
-                <li><a href="{{ url_for('main.profile', username=current_user.username) }}">Profile</a></li>
-                {% if current_user.is_administrator() %}
-                    <li><a href="/admin">Admin Page</a></li>
-                <li><a href="{{ url_for('main.manage_user') }}">Manage User</a></li>
-                <li><a href="{{ url_for('api.online_user') }}">Online User</a></li>
-                <li><a href="{{ url_for('chat.chat_index') }}" target="_blank">Talk With Robot</a></li>
-               {% endif %}
-               <li><a href="{{ url_for('main.manage_profile') }}">Setting</a></li>
-               {% if current_user.can(Permission.MODERATE_COMMENTS) %}
-               <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
-               {% endif %}
-                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-              </ul>
-             </li>
-              {% else %}
-            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-              {% endif %}
-              -->
         </ul>
       </nav>
       <div class="backdrop hidden-md hidden-lg" id="backdrop">
@@ -142,7 +73,7 @@
 <!-- end avatar -->
 <!-- user name -->
 <div class="col-md-8 widget-wrap">
-    <h3>Blogger: {{ user.username }}</h3>
+    <h3>Author: {{ user.username }}</h3>
     {% if user.name or user.location %}
     <p>
        {% if user.name %}<span class="glyphicon glyphicon-user" style="color: rgb(0, 0, 0); font-size: 10px;"></span> <span class="label label-success">{{ user.name }}</span></p>{% endif %}
@@ -160,7 +91,7 @@
     <p>Last Seen: {{ moment(user.last_seen).format('LLL') }}</p>
 <!-- end other information -->
 <!-- blog count -->
-    <p>{{ user.posts.count() }} blog posts.</p>
+    <p>{{ user.posts.count() }} novels published.</p>
 <!-- end blog count -->
 <!-- follow -->
     <p>
@@ -171,8 +102,8 @@
           <a href="{{ url_for('.unfollow', username=user.username)}}" class="btn btn-default">Unfollow</a>
           {% endif %}
         {% endif %}
-       <a href="{{ url_for('.followers', username=user.username) }}">Followers: <span class="badge">{{ user.followers.count() }}</span> </a>
-       <a href="{{ url_for('.followed_by', username=user.username) }}">Following: <span class="badge">{{ user.followed.count() }}</span> </a>
+       <!--<a href="{{ url_for('.followers', username=user.username) }}">Followers: <span class="badge">{{ user.followers.count() }}</span> </a>-->
+       <!--<a href="{{ url_for('.followed_by', username=user.username) }}">Following: <span class="badge">{{ user.followed.count() }}</span> </a>-->
        {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %}
          <span class="label label-default">Following you</span>
          {% endif %}
@@ -194,18 +125,18 @@
 </div>
 </div>
 {% if posts %}
-<h3>Posts by {{ user.username }}</h3>
+<h3>Published by {{ user.username }}</h3>
           <ol>
             {% for post in posts %}
               <li id="comment-4" class="comment-entry" >
               <article class="comment depth-1">
                 <header>
-                  <a href="{{ url_for('.profile', username=post.author.username) }}" target="_blank" class="pull-left">
-                    <img alt='' src='{{ post.author.gravatar(size=40) }}' class='avatar' height='50' width='50' />
+                  <a href="{{ url_for('main.novel_by_name', novelname=post.novelname)}}" target="_blank" class="pull-left">
+                    <img alt='' src='{{ post.picture }}' class='avatar' height='50' width='50' />
                   </a>
                   <div class="comment-details clearfix">
                     <div class="commenter-name">
-                      <a href="{{ url_for('.profile', username=post.author.username) }}" target="_blank">{{ post.author.username }}</a>
+                      <a href="{{ url_for('main.novel_by_name', novelname=post.novelname)}}" target="_blank">{{ post.novelname }}</a>
                     </div>
                     <span class="commenter-meta">{{ moment(post.timestamp).format('LL') }}</span>
                   </div>

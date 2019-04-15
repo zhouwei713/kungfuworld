@@ -4,8 +4,8 @@ Created on 2017415
 @author: zhou
 '''
 from wtforms import StringField, SubmitField, validators, PasswordField, TextAreaField, \
-    BooleanField, SelectField, FileField
-from wtforms.validators import Required, EqualTo, Length, Regexp, Email, DataRequired
+    BooleanField, SelectField, FileField, IntegerField
+from wtforms.validators import EqualTo, Length, Regexp, Email, DataRequired
 from flask_wtf import FlaskForm
 from werkzeug.routing import ValidationError
 from ..models import Role, User
@@ -69,9 +69,21 @@ class AddUserForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+class AddNovelForm(FlaskForm):
+    novelname = StringField('Novelname', validators=[DataRequired()])
+    description = PageDownField('Description', validators=[DataRequired()])
+    viewtimes = StringField('Viewtimes')
+    author_id = IntegerField('Author_id')
+    original = StringField('Original')
+    category = StringField('Category')
+    rate = IntegerField('Rate')
+    picture = StringField("Novel Picture", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+
 class PostForm(FlaskForm):
     postname = StringField("Post Name", validators=[DataRequired()])
-    noveLname = StringField('Novel Name', validators=[DataRequired()])
+    novelname = StringField('Novel Name', validators=[DataRequired()])
     body = PageDownField("Post Your Novel?", validators=[DataRequired()])
     picture = StringField("Upload Your Picture")
     original = StringField("Original Author")

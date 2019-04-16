@@ -89,6 +89,29 @@ def index():
                            top5_novels=top5_novels, top5_posts=top5_posts)
 
 
+@main.route('/category/sortbyrate', methods=['GET', 'POST'])
+def sortby_rate():
+    page = request.args.get('page', 1, type=int)
+    query = Novel.query
+    pagination = query.order_by(Novel.rate.desc()).paginate(page,
+                                                                per_page=7,
+                                                                error_out=False)
+    novels = pagination.items
+    top_rate_novel = query.order_by(Novel.rate.desc()).all()
+    top5_novels = top_rate_novel[:5]
+    post_query = Post.query
+    post_pagination = post_query.order_by(Post.timestamp.desc()).paginate(page,
+                                                                per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+                                                                error_out=False)
+    posts = post_pagination.items
+    choice = random.sample(posts, 1)[0]
+    top_time_novel = post_query.order_by(Post.timestamp.desc()).all()
+    top5_posts = top_time_novel[:5]
+    return render_template('index.html', novels=novels,
+                           pagination=pagination, choice=choice,
+                           top5_novels=top5_novels, top5_posts=top5_posts)
+
+
 @main.route('/post/publish', methods=['GET', 'POST'])
 @login_required
 def publish_blog():

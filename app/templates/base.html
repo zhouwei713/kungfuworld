@@ -1,7 +1,11 @@
 <!doctype html>
 <html>
 <head>
-    <title>{% block title %}Kung Fu Realm{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Kungfu,Wuxia,novel">
+    <meta name="description" content="KungfuRealm, a web novel site, include korean novel and chinese novel online for free. On luobodazahui.top you can find hundreds of english translated light novel, web novel, korean novel and chinese novel which are daily updated! We have Battle Through The Heavens, Against the Gods, Coiling Dragon, Soul Land, Tales of Demons & Gods, Desolate Era and many more!">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>{% block title %}KungfuRealm{% endblock %}</title>
 {% block head %}
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <script>
@@ -29,8 +33,6 @@ var _hmt = _hmt || [];
 
   gtag('config', 'UA-137974999-1');
 </script>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no" />
   <!--<link rel="stylesheet" href="https://www.readlightnovel.org/assets/styles/minify.css?v=4.8">-->
   <link rel="stylesheet" href="/static/css/minify_new.css?v=4.8">
 <!--<link rel="stylesheet" href="https://www.readlightnovel.org/assets/styles/night.css?v=1.75caf304b50cbb">-->
@@ -95,7 +97,7 @@ body {
       </div>
       <nav class="mobile-menu visible-sm visible-xs" id="mobile-menu">
         <ul id="menu-main-menu-1" class="menu">
-          <li class="current-menu-item"><a href="/newone">Home</a></li>
+          <li class="current-menu-item"><a href="/">Home</a></li>
           <li><a href="/allnovel">All Novel</a></li>
          {% if current_user.is_authenticated %}
         <li><a href="{{ url_for('main.publish_blog') }}">Publish Blog</a></li>
@@ -249,7 +251,7 @@ body {
             <div class="widget widget_text">
               <h4 class="widget-title">About ME</h4>
               <div class="textwidget">
-                  This is a martial arts novel site. In this site, you can browse a large number of interesting martial arts novels, you can arbitrarily in the martial arts world. Slowly understand the profound Chinese martial arts, you will gradually fall in love with him, deeply and deeply. . .
+                  KungfuRealm, This is a martial arts novel site. In this site, you can browse a large number of interesting martial arts novels, you can arbitrarily in the martial arts world. Slowly understand the profound Chinese martial arts, you will gradually fall in love with him, deeply and deeply. . .
               </div>
             </div>
           </div>
@@ -271,7 +273,6 @@ body {
 {#                <li><a href="#"><i class="sns icon-github-text"></i></a></li>#}
 {#                <li><a href="#"><i class="sns icon-qq"></i></a></li>#}
 {#                <li><a href="#"><i class="fa fa-rss"></i></a></li>#}
-                <li><a href="https://github.com/zhouwei713" target="_blank"><i class="sns icon-github-text"></i></a></li>
                 <li><a href="https://twitter.com/KungFuRealm" target="_blank"><i class="fa fa-twitter"></i></a></li>
                 <li><a href="#"><i class="fa fa-facebook"></i></a></li>
               </ul>

@@ -4,9 +4,9 @@ Created on 20170417
 @author: zhou
 '''
 
-from flask import render_template,redirect,request,url_for,flash
+from flask import render_template, redirect, request, url_for, flash
 from . import auth
-from flask_login import login_required, login_user, logout_user,current_user
+from flask_login import login_required, login_user, logout_user, current_user
 from app.auth.froms import LoginForm, RegistrationForm, PasswordResetForm, PasswordResetRequestForm
 from ..models import User
 from .. import db

@@ -13,7 +13,7 @@ from flask_login import LoginManager
 from flask_pagedown import PageDown
 from flask_msearch import Search
 from flask_admin import Admin, BaseView, expose
-from .aadmin.views import PostView, UserView, RoleView, FollowView
+from .aadmin.views import PostView, UserView, RoleView, FollowView, NovelView, PostVideoView
 
 bootstrap = Bootstrap()
 moment = Moment()
@@ -29,12 +29,14 @@ login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 
-from .models import User, Post, Role, Follow
+from .models import User, Post, Role, Follow, PostVideo, Novel
 admin = Admin(name='Admin Page')
 admin.add_view(UserView(User, db.session))
 admin.add_view(PostView(Post, db.session))
 admin.add_view(RoleView(Role, db.session))
 admin.add_view(FollowView(Follow, db.session))
+admin.add_view(PostVideoView(PostVideo, db.session))
+admin.add_view(NovelView(Novel, db.session))
 
 
 def create_app(config_name):

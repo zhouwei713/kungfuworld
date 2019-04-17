@@ -69,6 +69,12 @@ class AddUserForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+class AddPostVideoForm(FlaskForm):
+    video_id = IntegerField('video_id')
+    video_path = StringField('video_path')
+    submit = SubmitField('Submit')
+
+
 class AddNovelForm(FlaskForm):
     novelname = StringField('Novelname', validators=[DataRequired()])
     description = PageDownField('Description', validators=[DataRequired()])

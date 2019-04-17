@@ -38,6 +38,13 @@ class Novel(db.Model):
     category = db.Column(db.Text)
 
 
+class PostVideo(db.Model):
+    __tablename__ = 'post_video'
+    id = db.Column(db.Integer, primary_key=True)
+    video_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    video_path = db.Column(db.String(128))
+
+
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
@@ -53,6 +60,7 @@ class Post(db.Model):
     original = db.Column(db.Text)
     tag = db.Column(db.Text)
     voice = db.Column(db.Integer)
+    posts = db.relationship('PostVideo', backref='postvideo', lazy='dynamic')
     __searchable__ = ['body', 'original']
     
     @staticmethod

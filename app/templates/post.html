@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% import "_macros.html" as macros %}
 {% import "bootstrap/wtf.html" as wtf %}
-{% block title %}Kung Fu Realm - Post{% endblock %}
+{% block title %}{% for post in posts %} {{ post.postname }}{% endfor %} - KungfuRealm{% endblock %}
 {% block header %}
 <header class="site-header fixed" id="main-navbar">
   <div class="outer-container">
@@ -224,23 +224,46 @@
 
 
 {% block playvoice %}
+{% for post in posts %}
 {% if voice == 1 %}
       <section class="main-content-area">
         <div class="outer-container">
           <div class="inner-container">
             <div class="comment-wrap">
-              <div class="panel-heading">Listen Novel Now</div>
+              <div class="panel-heading">Listen Novel Now, {{ voice_path_list }}</div>
               <div class="panel-body">
-                <div class="text-center">
+                <div class="text-center" id="audioBox">
                     <div class="row">
                        <img class="img-responsive" alt width="400" height="120" src="{{ posts[0].picture}}">
                      </div>
+<br>
+<script type="text/javascript">
+    window.onload = function(){
+        //var arr = ["/static/voice/test/1.mp3","{{ post.id }}"];
+        var arr = {{ voice_path_list|tojson }};
+        var myAudio = new Audio();
+        myAudio.preload = true;
+        myAudio.controls = true;
+        myAudio.src = arr.pop();
+        myAudio.addEventListener('ended', playEndedHandler, false);
+        myAudio.play();
+        document.getElementById("audioBox").appendChild(myAudio);
+        myAudio.setAttribute("style", "width: 100%")
+        myAudio.loop = false;
+        function playEndedHandler(){
+            myAudio.src = arr.pop();
+            myAudio.play();
+            console.log(arr.length);
+            !arr.length && myAudio.removeEventListener('ended',playEndedHandler,false);
+        }
+    }
+</script>
+                  <!--<audio controls style="width: 100%">-->
 
-                  <audio controls style="width: 100%">
+                    <!--<source src='/static/voice/shediaoyingxiongzhuan/ch1-shediaoyingxiongzhuan.mp3' >-->
+                        <!--Your browser don't support audio element。-->
+                  <!--</audio>-->
 
-                    <source src='/static/voice/shediaoyingxiongzhuan/ch1-shediaoyingxiongzhuan.mp3' >
-                        Your browser don't support audio element。
-                  </audio>
 
                 </div>
               </div>
@@ -250,6 +273,7 @@
         </div>
       </section>
 {% endif %}
+{% endfor %}
 {% endblock %}
 
 

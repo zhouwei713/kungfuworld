@@ -8,9 +8,10 @@ Created on 2017415
 from flask import render_template, session, redirect, url_for, current_app, flash, abort, request, make_response, g
 from flask import jsonify
 from .. import db
-from ..models import User, Role, Permission, Post, Comment, Novel
+from ..models import User, Role, Permission, Post, Comment, Novel, PostVideo
 from . import main
-from .forms import NameForm, ChangePw, EditProfileForm, PostForm, CommentForm, SearchForm, AddUserForm, AddNovelForm
+from .forms import NameForm, ChangePw, EditProfileForm, PostForm, CommentForm, \
+    SearchForm, AddUserForm, AddNovelForm, AddPostVideoForm
 from datetime import datetime
 from flask_login import login_required
 from flask_login.utils import current_user
@@ -25,7 +26,7 @@ from ..api.check_mobile import checkMobile
 import random
 
 
-@main.route('/author/<authorname>')
+@main.route('/author/<authorname>/')
 def author_search(authorname):
     results = Post.query.filter_by(original=authorname).all()
     query = Post.query.filter_by(original=authorname)
@@ -38,7 +39,7 @@ def author_search(authorname):
                            choice=choice, pagination=pagination)
 
 
-@main.route('/search_result/<query>')
+@main.route('/search_result/<query>/')
 def search_results(query):
     results = Post.query.msearch(query, fields=['body'], limit=20).all()
     return render_template('search_results.html', results=results, query=query)
@@ -53,7 +54,7 @@ def search():
         return redirect(url_for('main.search_results', query=query))
 
 
-@main.route('/allnovel', methods=['GET', 'POST'])
+@main.route('/allnovel/', methods=['GET', 'POST'])
 def all_novel():
     page = request.args.get('page', 1, type=int)
     query = Post.query
@@ -89,7 +90,7 @@ def index():
                            top5_novels=top5_novels, top5_posts=top5_posts)
 
 
-@main.route('/category/sortbyrate', methods=['GET', 'POST'])
+@main.route('/category/sortbyrate/', methods=['GET', 'POST'])
 def sortby_rate():
     page = request.args.get('page', 1, type=int)
     query = Novel.query
@@ -112,13 +113,13 @@ def sortby_rate():
                            top5_novels=top5_novels, top5_posts=top5_posts)
 
 
-@main.route('/post/publish', methods=['GET', 'POST'])
+@main.route('/post/publish/', methods=['GET', 'POST'])
 @login_required
 def publish_blog():
     return render_template('publish_blog.html')
 
 
-@main.route('/publish/post', methods=['GET', 'POST'])
+@main.route('/publish/post/', methods=['GET', 'POST'])
 @login_required
 def publish_post():
     postname = request.form.get('postname', '')
@@ -180,7 +181,7 @@ def publish_api_post():
         ), 200
 
 
-@main.route('/profile/<username>')
+@main.route('/profile/<username>/')
 def profile(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -195,7 +196,7 @@ def profile(username):
     return render_template('profile.html', user=user, posts=posts, pagination=pagination, last=last, choice=choice)
 
 
-@main.route('/novelnamelist/<novelname>')
+@main.route('/novelnamelist/<novelname>/')
 def novel_by_name(novelname):
     postname = Post.query.filter_by(novelname=novelname).first()
     page = request.args.get('page', 1, type=int)
@@ -212,7 +213,7 @@ def novel_by_name(novelname):
                            postname=postname, choice=choice, description=description)
 
 
-@main.route('/noveltaglist/<tag>')
+@main.route('/noveltaglist/<tag>/')
 def novel_by_tag(tag):
     postname = Post.query.filter_by(tag=tag).first()
     page = request.args.get('page', 1, type=int)
@@ -227,13 +228,13 @@ def novel_by_tag(tag):
                            pagination=novel, postname=postname, choice=choice)
 
 
-@main.route('/manage-profile')
+@main.route('/manage-profile/')
 @login_required
 def manage_profile():
     return render_template('manage_profile.html')
 
 
-@main.route('/user/<username>')
+@main.route('/user/<username>/')
 def user(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -247,7 +248,7 @@ def user(username):
     return render_template('user.html', user=user, posts=posts, pagination=pagination, choice=choice)
 
 
-@main.route('/changepw',methods=['GET', 'POST'])
+@main.route('/changepw/', methods=['GET', 'POST'])
 @login_required
 def changepw():
     form = ChangePw()
@@ -263,14 +264,14 @@ def changepw():
     return render_template('/changepw.html', form=form)
 
 
-@main.route('/admin')
+@main.route('/admin/')
 @login_required
 @admin_required
 def admin_only():
-    return "For admin only!"
+    return redirect(url_for('main.index'))
 
 
-@main.route('/edit-profile', methods=['GET', 'POST'])
+@main.route('/edit-profile/', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
@@ -288,7 +289,7 @@ def edit_profile():
     return render_template('edit_profile.html', form=form)
 
 
-@main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
+@main.route('/edit-profile/<int:id>/', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_profile_admin(id):
@@ -316,7 +317,7 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form, user=user)
 
 
-@main.route('/add-user', methods=['GET', 'POST'])
+@main.route('/add-user/', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def add_user():
@@ -330,21 +331,35 @@ def add_user():
     return render_template('adduser.html', form=form)
 
 
-@main.route('/add-novel', methods=['GET', 'POST'])
+@main.route('/add-novel/', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def add_novel():
     form = AddNovelForm()
     if form.validate_on_submit():
         novel = Novel(novelname=form.novelname.data, description=form.description.data, viewtimes=form.viewtimes.data,
-                      author_id=form.author_id.data, category=form.category.data, picture=form.picture.data)
+                      author_id=form.author_id.data, category=form.category.data, picture=form.picture.data,
+                      original=form.original.data, rate=form.rate.data)
         db.session.add(novel)
         db.session.commit()
         return redirect(url_for('.index'))
     return render_template('addnovel.html', form=form)
 
 
-@main.route('/admin/mange-user')
+@main.route('/add-video/', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_video():
+    form = AddPostVideoForm()
+    if form.validate_on_submit():
+        postvideo = PostVideo(video_id=form.video_id.data, video_path=form.video_path.data)
+        db.session.add(postvideo)
+        db.session.commit()
+        return redirect(url_for('.index'))
+    return render_template('addvideo.html', form=form)
+
+
+@main.route('/admin/manage-user/')
 @login_required
 @admin_required
 def manage_user():
@@ -352,7 +367,7 @@ def manage_user():
     return render_template('manage_user.html', users=users)
 
 
-@main.route('/post/<int:id>', methods=['GET', 'POST'])
+@main.route('/post/<int:id>/', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
     p_voice = post.voice
@@ -379,11 +394,17 @@ def post(id):
         )
     comments = pagination.items
     choice = random.sample(Post.query.all(), 1)[0]
+    voice = PostVideo.query.filter_by(video_id=id).all()
+    voice_path_list = []
+    for v in voice:
+        v_path = v.video_path
+        voice_path_list.append(v_path)
     return render_template('post.html', posts=[post], form=form, comments=comments,
-                           pagination=pagination, choice=choice, voice=p_voice)
+                           pagination=pagination, choice=choice, voice=p_voice,
+                           voice_path_list=voice_path_list)
 
 
-@main.route('/edit/<int:id>', methods=['GET', 'POST'])
+@main.route('/edit/<int:id>/', methods=['GET', 'POST'])
 @login_required
 def edit(id):
     post = Post.query.get_or_404(id)
@@ -412,7 +433,7 @@ def edit(id):
     return render_template('edit_post.html', form=form, post=post)
 
 
-@main.route('/editnovel/<int:id>', methods=['GET', 'POST'])
+@main.route('/editnovel/<int:id>/', methods=['GET', 'POST'])
 @login_required
 def editnovel(id):
     novel = Novel.query.get_or_404(id)
@@ -443,7 +464,7 @@ def editnovel(id):
     return render_template('edit_novel.html', form=form, novel=novel)
 
 
-@main.route('/edit/post/delete/<int:id>')
+@main.route('/edit/post/delete/<int:id>/')
 @login_required
 def edit_delete_post(id):
     post = Post.query.get_or_404(id)
@@ -456,7 +477,7 @@ def edit_delete_post(id):
     return redirect(url_for('main.user', username=current_user.username))
 
 
-@main.route('/edit/novel/delete/<int:id>')
+@main.route('/edit/novel/delete/<int:id>/')
 @login_required
 def edit_delete_novel(id):
     novel = Novel.query.get_or_404(id)
@@ -466,7 +487,7 @@ def edit_delete_novel(id):
     return redirect(url_for('main.index'))
 
 
-@main.route('/follow/<username>')
+@main.route('/follow/<username>/')
 @login_required
 @permission_required(Permission.FOLLOW)
 def follow(username):
@@ -482,7 +503,7 @@ def follow(username):
     return redirect(url_for('.user', username=username))
 
 
-@main.route('/unfollow/<username>')
+@main.route('/unfollow/<username>/')
 @login_required
 @permission_required(Permission.FOLLOW)
 def unfollow(username):
@@ -498,7 +519,7 @@ def unfollow(username):
     return redirect(url_for('.user', username=username))
 
 
-@main.route('/followers/<username>')
+@main.route('/followers/<username>/')
 def followers(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -512,7 +533,7 @@ def followers(username):
                            pagination=pagination, follows=follows)
 
 
-@main.route('/followed-by/<username>')
+@main.route('/followed-by/<username>/')
 def followed_by(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -528,7 +549,7 @@ def followed_by(username):
                            pagination=pagination, follows=follows)
 
 
-@main.route('/all')
+@main.route('/all/')
 @login_required
 def show_all():
     resp = make_response(redirect(url_for('.index')))
@@ -536,7 +557,7 @@ def show_all():
     return resp
 
 
-@main.route('/followed')
+@main.route('/followed/')
 @login_required
 def show_followed():
     resp = make_response(redirect(url_for('.index')))
@@ -544,7 +565,7 @@ def show_followed():
     return resp
 
 
-@main.route('/moderate')
+@main.route('/moderate/')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def moderate():
@@ -556,7 +577,7 @@ def moderate():
     return render_template('moderate.html', comments=comments, pagination=pagination, page=page)
 
 
-@main.route('/moderate/enable/<int:id>')
+@main.route('/moderate/enable/<int:id>/')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def moderate_enable(id):
@@ -567,7 +588,7 @@ def moderate_enable(id):
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
 
 
-@main.route('/moderate/disable/<int:id>')
+@main.route('/moderate/disable/<int:id>/')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def moderate_disable(id):

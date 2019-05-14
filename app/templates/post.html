@@ -91,23 +91,35 @@
         <div class="entry-content-wrap">
           <div class="post-content text-content">
             <p>
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <ins class="adsbygoogle"
+                     style="display:block; text-align:center;"
+                     data-ad-layout="in-article"
+                     data-ad-format="fluid"
+                     data-ad-client="ca-pub-2591312759975053"
+                     data-ad-slot="3338157475">
+                    </ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
              {% if post.body_html %}
                {{ post.body_html | safe }}
             {% else %}
                {{ post.body }}
             {% endif %}
                 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<ins class="adsbygoogle"
-     style="display:block; text-align:center;"
-     data-ad-layout="in-article"
-     data-ad-format="fluid"
-     data-ad-client="ca-pub-2591312759975053"
-     data-ad-slot="7249347903"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-            </p>
-          </div>
+                    <ins class="adsbygoogle"
+                     style="display:block; text-align:center;"
+                     data-ad-layout="in-article"
+                     data-ad-format="fluid"
+                     data-ad-client="ca-pub-2591312759975053"
+                     data-ad-slot="3338157475">
+                    </ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+                </p>
+            </div>
                <div class="post-footer">
                {% if current_user == post.author %}
                <a href="{{ url_for('.edit', id=post.id) }}" class="label label-primary" style="float:right">Edit</a>
@@ -230,7 +242,7 @@
         <div class="outer-container">
           <div class="inner-container">
             <div class="comment-wrap">
-              <div class="panel-heading">Listen Novel Now, {{ voice_path_list }}</div>
+              <div class="panel-heading">Listen Novel Now</div>
               <div class="panel-body">
                 <div class="text-center" id="audioBox">
                     <div class="row">
@@ -246,7 +258,7 @@
         myAudio.controls = true;
         myAudio.src = arr.pop();
         myAudio.addEventListener('ended', playEndedHandler, false);
-        myAudio.play();
+        //myAudio.play();
         document.getElementById("audioBox").appendChild(myAudio);
         myAudio.setAttribute("style", "width: 100%")
         myAudio.loop = false;

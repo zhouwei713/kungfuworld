@@ -367,7 +367,7 @@ def manage_user():
     return render_template('manage_user.html', users=users)
 
 
-@main.route('/post/<int:id>/', methods=['GET', 'POST'])
+@main.route('/novel/<int:id>/', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
     p_voice = post.voice
@@ -399,6 +399,7 @@ def post(id):
     for v in voice:
         v_path = v.video_path
         voice_path_list.append(v_path)
+    voice_path_list.sort(reverse=True)
     return render_template('post.html', posts=[post], form=form, comments=comments,
                            pagination=pagination, choice=choice, voice=p_voice,
                            voice_path_list=voice_path_list)

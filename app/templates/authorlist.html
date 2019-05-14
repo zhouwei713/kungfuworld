@@ -108,14 +108,19 @@
     {% endif %}
     </div>
 {% if pagination %}
+{% if results %}
 <div class="pagination"></div>
 {{ macros.pagination_widget(pagination, '.author_search', authorname=query) }}
 {% endif %}
+{% endif %}
 {% endblock %}
+
 
 {% block pagination %}
 <div class="pagination-wrap clearfix" role="navigation"></div>
 {% endblock %}
+
+
 
 {% block choice %}
 {% if choice %}
